@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { ParkingSign } from "./svg";
 
 const Navbar = () => {
   return (
@@ -12,7 +13,7 @@ const Navbar = () => {
         </li>
         <li className="flex items-center">
           <Link href="/" className="text-xl font-bold text-white">
-            Dashboard
+            <ParkingSign></ParkingSign>
           </Link>
         </li>
       </ul>
