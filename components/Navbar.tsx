@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { ParkingSign } from "./svg";
+import ThemeToggle from "./ui/theme-toggle";
 
 const Navbar = () => {
   return (
@@ -11,8 +12,10 @@ const Navbar = () => {
             FlexPark
           </Link>
         </li>
+
         <li className="flex items-center">
-          <Link href="/" className="text-xl font-bold text-white">
+          <ThemeToggle />
+          <Link href="/" className="text-xl font-bold text-white ml-3">
             <ParkingSign></ParkingSign>
           </Link>
         </li>
