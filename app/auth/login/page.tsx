@@ -1,3 +1,6 @@
+import React from "react";
+import LoginForm from "../components/LoginForm";
+
 export default function LoginScreen() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
@@ -5,6 +8,7 @@ export default function LoginScreen() {
         <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
           Login Page
         </h1>
+        <LoginForm />
       </main>
     </div>
   );

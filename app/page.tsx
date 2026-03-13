@@ -9,10 +9,13 @@ export default function Home() {
             Welcome to your{" "}
             <span className="text-zinc-300">IoT</span> frontend
           </h1>
-          <div>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum, incidunt accusantium commodi harum perferendis totam iure iusto explicabo officiis nesciunt sequi animi similique illum dolorum quod esse atque quibusdam quaerat.
+          </p>
+          <div className="mt-4">
             <Link
               href="/auth/login"
-              className="inline-block rounded-lg px-4 py-2 font-medium text-black bg-white mr-1
+              className="inline-block rounded-lg px-4 py-2 font-medium text-black bg-white mr-4
               hover:bg-gray-500 hover:text-white
               transition duration-300 ease-in-out"
             >
