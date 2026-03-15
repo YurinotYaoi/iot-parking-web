@@ -3,13 +3,19 @@ import SignUpForm from "../components/SignUpForm";
 
 export default function SignupScreen() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+    <main className="flex flex-col min-h-screen w-full items-center justify-center py-32 px-16
+    bg-white dark:bg-black">
+      <div className="border-2 border-gray-500 p-5 rounded-2xl
+      flex flex-col items-center justify-center">
+        <h1 className="text-3xl font-semibold
+        text-black dark:text-zinc-50">
           Signup Page
         </h1>
+        <p className="py-4">
+          Already have an account? <a href="/auth/login"><u>Login</u></a>
+        </p>
         <SignUpForm />
-      </main>
-    </div>
+        </div>
+    </main>
   );
 }
