@@ -1,3 +1,5 @@
+Group 7 BSIT 3B
+
 ## Getting Started
 
 First, install the dependencies:
