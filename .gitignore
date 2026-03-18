@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# firebase
+serviceAccountKey.json
+
+#bruno
+flexpark-api
