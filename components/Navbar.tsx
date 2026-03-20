@@ -1,23 +1,31 @@
-import React from "react";
-import Link from "next/link";
+"use client";
+
 import { ParkingSign } from "./svg";
 import ThemeToggle from "./ui/theme-toggle";
+import { useRouter } from "next/navigation";
+import { logoutUser } from "@/services/logout";
 
 const Navbar = () => {
+
+  const router = useRouter();
+
+  const handleHomeClick = async () => {
+  await logoutUser();
+  router.push("/");
+  };
+
   return (
     <nav className="fixed top-0 w-full bg-gray-900 py-5 px-24 border-b border-gray-700">
       <ul className="flex items-center justify-between">
         <li className="flex items-center">
-          <Link href="/" className="text-2xl font-bold text-white">
+          <button onClick={handleHomeClick} className="text-2xl font-bold text-white cursor-hover:text-gray-300">
             FlexPark
-          </Link>
+          </button>
         </li>
 
         <li className="flex items-center">
           <ThemeToggle />
-          <Link href="/" className="text-xl font-bold text-white ml-3">
-            <ParkingSign></ParkingSign>
-          </Link>
+          <ParkingSign/>
         </li>
       </ul>
     </nav>

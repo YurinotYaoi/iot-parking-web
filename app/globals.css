@@ -139,4 +139,7 @@
   .dark label {
     @apply text-zinc-50;
   }
+  button {
+    @apply cursor-pointer;
+  }
 }

@@ -3,15 +3,27 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useEffect } from "react";
 import { auth } from "@/lib/firebaseClient";
+import { onAuthStateChanged } from "firebase/auth";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
+  useEffect(() => {
+  const unsub = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      router.push("/dashboard");
+    }
+  });
+
+  return () => unsub();
+  }, []);  
+
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
       // 1️⃣ Login with Firebase
@@ -29,13 +41,10 @@ const LoginForm = () => {
 
       const data = await res.json();
 
-      if (!res.ok) {
+      if (!res) {
         alert(data.message || "Login failed");
-        return;
       }
-
-      // 4️⃣ Navigate to dashboard on success
-      router.push("/dashboard");
+      
     } catch (err: unknown) {
       console.log("LOGIN ERROR:", err);
 
