@@ -22,7 +22,6 @@ const Navbar = () => {
             FlexPark
           </button>
         </li>
-
         <li className="flex items-center">
           <ThemeToggle />
         </li>
