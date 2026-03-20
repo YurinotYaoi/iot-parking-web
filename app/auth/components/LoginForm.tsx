@@ -53,7 +53,8 @@ const LoginForm = () => {
 
   return (
     <form className="flex flex-col" onSubmit={handleLogin}>
-      <label htmlFor="email" className="text-sm font-medium text-gray-700">
+      <label htmlFor="email" className="text-sm font-medium 
+      .dark:text-zinc-50">
         Email
       </label>
       <input
@@ -61,10 +62,11 @@ const LoginForm = () => {
         id="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="block w-full rounded-md border-2 border-gray-500 p-2 text-sm text-gray-900 focus:border-gray-600"
+        className=".dark:text-zinc-50"
       />
 
-      <label htmlFor="password" className="text-sm font-medium text-gray-700">
+      <label htmlFor="password" className="text-sm font-medium
+      .dark:text-zinc-50">
         Password
       </label>
       <input
@@ -72,7 +74,7 @@ const LoginForm = () => {
         id="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="block w-full rounded-md border-2 border-gray-500 p-2 text-sm text-gray-900 focus:border-gray-600"
+        className=".dark:text-zinc-50"
       />
 
       <button
