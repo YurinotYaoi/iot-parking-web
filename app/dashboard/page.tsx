@@ -5,6 +5,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebaseClient";
 import { useRouter } from "next/navigation";
 import SensorList from "@/components/SensorList"
+import { IoLogOutOutline } from "react-icons/io5";
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -37,7 +38,10 @@ export default function DashboardScreen() {
               Layouts</Button>
             </div>
             <Button className="rounded-sm"
-            onClick={handleLogout}>Logout</Button>
+            onClick={handleLogout}>
+              <IoLogOutOutline/>
+              Logout
+            </Button>
           </div>
 
           <div className="flex-grow w-full border-2 border-gray-600 rounded-md p-1">

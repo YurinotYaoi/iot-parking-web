@@ -1,17 +1,24 @@
+"use client";
+
 import { DEFAULT_SENSORS, Sensor } from "@/models/sensor.model";
 import { Button } from "./ui/button";
+import { useState } from "react"
+import EditSensorModal from "@/components/modals/EditSensorModal"
 
 export default function SensorList() {
   const sensors: Sensor[] = DEFAULT_SENSORS
+  const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null)
+  const [open, setOpen] = useState(false)
 
   return (
-    <div>
+    <div className="h-[770]  overflow-y-auto rounded">
+      <EditSensorModal sensor={selectedSensor} onClose={() => setSelectedSensor(null)} />
         <div className="grid grid-cols-6 border-b">
           <div className="p-3">Sensor Name</div>
           <div className="p-3 text-center">Floor</div>
           <div className="p-3 text-center">Column</div>
           <div className="p-3 text-center">Row</div>
-          <div className="p-3">Status</div>
+          <div className="p-3 text-center">Status</div>
           <div className="p-3 text-center">Edit</div>
         </div>
       {sensors.map((sensor: Sensor) => (
@@ -27,7 +34,11 @@ export default function SensorList() {
               : "🔴 Occupied"}
           </div>
 
-          <div className="p-3 flex justify-center"><Button className="w-full">Edit</Button></div>
+          <div className="p-3 flex justify-center"><Button className="w-full" onClick={() => {
+            setSelectedSensor(sensor)
+            setOpen(true)
+            }}>Edit</Button>
+          </div>
         </div>
       ))}
     </div>
