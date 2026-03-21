@@ -31,7 +31,7 @@ export default function DashboardScreen() {
         <div className="w-[70%] p-2 flex flex-col">
           <div className="h-fit w-full flex border-2 border-gray-600 rounded-md p-1 mb-1 justify-between">
             <div>
-            <Button className="rounded-sm">
+            <Button className="rounded-sm mr-1">
               Create Sensor</Button>
             <Button className="rounded-sm">
               Layouts</Button>

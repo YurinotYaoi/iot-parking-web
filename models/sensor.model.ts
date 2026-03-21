@@ -14,7 +14,7 @@ export const DEFAULT_SENSORS: Sensor[] = [
     row: 1,
     column: 2,
     floor: 1,
-    status: "unknown",
+    status: "free",
   },
   {
     id: "S2",
