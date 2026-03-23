@@ -8,11 +8,11 @@ import EditSensorModal from "@/components/modals/EditSensorModal"
 export default function SensorList() {
   const sensors: Sensor[] = DEFAULT_SENSORS
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null)
-  const [open, setOpen] = useState(false)
+  const handleShowESModal = () => {};
 
   return (
     <div className="h-[770]  overflow-y-auto rounded">
-      <EditSensorModal sensor={selectedSensor} onClose={() => setSelectedSensor(null)} />
+      <EditSensorModal sensor={selectedSensor} handleShowESModal={() => setSelectedSensor(null)} />
         <div className="grid grid-cols-6 border-b">
           <div className="p-3">Sensor Name</div>
           <div className="p-3 text-center">Floor</div>
@@ -35,8 +35,8 @@ export default function SensorList() {
           </div>
 
           <div className="p-3 flex justify-center"><Button className="w-full" onClick={() => {
-            setSelectedSensor(sensor)
-            setOpen(true)
+            setSelectedSensor(sensor), 
+            handleShowESModal
             }}>Edit</Button>
           </div>
         </div>

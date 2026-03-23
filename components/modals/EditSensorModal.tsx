@@ -4,16 +4,16 @@ import { Sensor } from "@/models/sensor.model"
 
 type Props = {
   sensor: Sensor | null
-  onClose: () => void
+  handleShowESModal: () => void
 }
 
-export default function EditSensorModal({ sensor, onClose }: Props) {
-
+const EditSensorModal = ({ sensor, handleShowESModal }: Props)  => {
+  
   if (!sensor) return null
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center"
-    onClick={onClose}>
+    onClick={handleShowESModal}>
 
       <div className="bg-white/75 p-6 rounded w-[400px]"
       onClick={(e) => e.stopPropagation()}>
@@ -29,10 +29,12 @@ export default function EditSensorModal({ sensor, onClose }: Props) {
 
         <button
           className="mt-4 bg-red-500 text-white px-3 py-1"
-          onClick={onClose}>
+          onClick={handleShowESModal}>
           Close
         </button>
       </div>
     </div>
   )
 }
+
+export default EditSensorModal

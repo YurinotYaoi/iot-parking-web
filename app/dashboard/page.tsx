@@ -4,20 +4,26 @@ import { Button } from "@/components/ui/button";
 import { signOut, onAuthStateChanged, type User as FirebaseUser } from "firebase/auth";
 import { auth } from "@/lib/firebaseClient";
 import { useRouter } from "next/navigation";
-import SensorList from "@/components/SensorList";
 import { IoLogOutOutline } from "react-icons/io5";
 import { getUser } from "@/services/user";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { UserProfile } from "@/models/user";
 
-export default function DashboardScreen() {
-  const router = useRouter();
+import SensorList from "@/components/SensorList";
+import CreateSensorModal from "@/components/modals/CreateSensorModal";
 
+
+export default function DashboardScreen() {
+
+  const router = useRouter();
+  //Start of Logout
   const handleLogout = async () => {
     await signOut(auth);
     router.push("/");
   };
+  //End of Logout
 
+  //Start of User Fetch
   const [user, setUser] = useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -34,23 +40,36 @@ export default function DashboardScreen() {
 
     return () => unsub();
   }, []);
+  //End of User Fetch
+
+  //CreateSensorModal
+  const [showCSModal, setShowCSModal] = useState(false)
+  const handleShowCSModal = () => {setShowCSModal(!showCSModal)};
 
   return (
     <main className="flex flex-col w-full items-center justify-center">
       <div className="w-screen max-w-600 flex flex-rows h-213">
+
+        {showCSModal && <CreateSensorModal handleShowCSModal={handleShowCSModal}/>}
+
         <div className="w-[30%] p-2">
           <div className="h-full w-full border-2 border-gray-600 rounded-md p-1">
-            <div className="bg-black text-white p-2">
-              {user ? <h1>{user.firstName} {user.lastName}</h1> : <p>Loading user...</p>}
+            <div className="p-10">
+              {user ? <h1 className="text-center">{user.firstName} {user.lastName}</h1> : <h1 className="text-center text-3xl">Loading user...</h1>}
             </div>
-            <div className="bg-red-200"></div>
+            <div className="bg-red-200">
+              <Button className="w-full">
+                
+              </Button>
+            </div>
           </div>
         </div>
 
         <div className="w-[70%] p-2 flex flex-col">
           <div className="h-fit w-full flex border-2 border-gray-600 rounded-md p-1 mb-1 justify-between">
             <div>
-              <Button className="rounded-sm mr-1">Create Sensor</Button>
+              <Button className="rounded-sm mr-1" 
+              onClick={handleShowCSModal}>Create Sensor</Button>
               <Button className="rounded-sm">Layouts</Button>
             </div>
             <Button className="rounded-sm" onClick={handleLogout}>

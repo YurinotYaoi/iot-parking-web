@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -50,7 +51,7 @@ const SignUpForm = () => {
         onChange={(e) => setEmail(e.target.value)}
       />
 
-      <label htmlFor="name">
+      <label htmlFor="firstName">
         FirstName
       </label>
       <input
