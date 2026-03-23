@@ -22,21 +22,21 @@ const EditAccountScreen = ({ navigation }: Props) => {
   const { user, logout, updateProfile } = useAuth();
   const [name, setName] = useState(user?.name ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
-  const [phone, setPhone] = useState(user?.phone ?? '');
+  const [password, setPassword] = useState(user?.phone ?? '');
 
   useEffect(() => {
     setName(user?.name ?? '');
     setEmail(user?.email ?? '');
-    setPhone(user?.phone ?? '');
+    setPassword(user?.phone ?? '');
   }, [user]);
 
-  const isDisabled = useMemo(() => !name.trim() || !email.trim() || !phone.trim(), [email, name, phone]);
+  const isDisabled = useMemo(() => !name.trim() || !email.trim() || !password.trim(), [email, name, password]);
 
   const handleSave = () => {
     updateProfile({
       name: name.trim(),
       email: email.trim(),
-      phone: phone.trim(),
+      password: password.trim(),
     });
     Alert.alert('Profile updated', 'Your account details have been saved.');
     navigation.goBack();
@@ -60,11 +60,11 @@ const EditAccountScreen = ({ navigation }: Props) => {
               autoCapitalize="none"
             />
             <AppInput
-              label="Phone Number"
-              placeholder="Enter your phone number"
-              value={phone}
-              onChangeText={setPhone}
-              keyboardType="phone-pad"
+                label="Password"
+                placeholder="At least 6 characters"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
             />
 
             <View style={styles.buttonGroup}>

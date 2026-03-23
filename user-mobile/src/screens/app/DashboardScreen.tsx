@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: spacing.lg,
     marginTop: spacing.lg,
+    
   },
   summaryTitle: {
     color: colors.surface,
