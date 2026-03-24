@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { signOut, onAuthStateChanged, type User as FirebaseUser } from "firebase/auth";
 import { auth } from "@/lib/firebaseClient";
 import { useRouter } from "next/navigation";
-import { IoLogOutOutline } from "react-icons/io5";
+import { IoLogOutOutline , IoSettings } from "react-icons/io5";
+import { FaMapLocationDot } from "react-icons/fa6";
 import { getUser } from "@/services/user";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { UserProfile } from "@/models/user";
+
 
 import SensorList from "@/components/SensorList";
 import CreateSensorModal from "@/components/modals/CreateSensorModal";
@@ -55,11 +57,14 @@ export default function DashboardScreen() {
         <div className="w-[30%] p-2">
           <div className="h-full w-full border-2 border-gray-600 rounded-md p-1">
             <div className="p-10">
-              {user ? <h1 className="text-center">{user.firstName} {user.lastName}</h1> : <h1 className="text-center text-3xl">Loading user...</h1>}
+              {user ? 
+              <h1 className="text-center text-3xl">{user.firstName} {user.lastName}</h1> : 
+              <h1 className="text-center text-3xl">Loading user...</h1>}
             </div>
-            <div className="bg-red-200">
-              <Button className="w-full">
-                
+            <div className="text-2xl">
+              <Button className="w-full rounded-sm justify-start" onClick={handleShowCSModal}>
+                <FaMapLocationDot className="!size-5" /> | 
+                Location
               </Button>
             </div>
           </div>
@@ -70,15 +75,23 @@ export default function DashboardScreen() {
             <div>
               <Button className="rounded-sm mr-1" 
               onClick={handleShowCSModal}>Create Sensor</Button>
-              <Button className="rounded-sm">Layouts</Button>
+              <Button className="rounded-sm" onClick={() => router.push("/dashboard/layouts")}>
+                Layouts
+              </Button>
             </div>
-            <Button className="rounded-sm" onClick={handleLogout}>
-              <IoLogOutOutline />
-              Logout
-            </Button>
+            <div>
+              <Button className="rounded-sm mr-1" onClick={() => router.push("/dashboard/settings")}>
+                  <IoSettings />
+                  Settings
+                </Button>
+              <Button className="rounded-sm" onClick={handleLogout}>
+                <IoLogOutOutline />
+                Logout
+              </Button>
+            </div>
           </div>
 
-          <div className="flex-grow w-full border-2 border-gray-600 rounded-md p-1">
+          <div className="grow w-full border-2 border-gray-600 rounded-md p-1">
             <SensorList />
           </div>
         </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { ParkingSign } from "./svg";
 import ThemeToggle from "./ui/theme-toggle";
 import { useRouter } from "next/navigation";
 import { logoutUser } from "@/services/logout";
