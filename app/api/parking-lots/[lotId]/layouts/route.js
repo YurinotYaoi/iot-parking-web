@@ -25,7 +25,7 @@ export const POST = withAuth(async (req, { params }) => {
       return errorResponse('Forbidden — you do not own this lot', 403);
     }
     const body = await req.json();
-    const missing = validateRequiredFields(body, ['layoutName', 'floor', 'totalRows', 'totalColumns']);
+    const missing = validateRequiredFields(body, ['layoutName']);
     if (missing) return errorResponse(missing, 400);
 
     const layout = await createLayout(lotId, body);
