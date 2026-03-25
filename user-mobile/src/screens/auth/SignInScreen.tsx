@@ -230,10 +230,18 @@ const SignInScreen = ({ navigation }: Props) => {
   }, [email, firstName, lastName, password, confirmPassword]);
 
   const handleRegister = () => {
+
+    // Check passwords match BEFORE calling the function
+  if (password !== confirmPassword) {
+    // Show an alert or error message
+    return;
+  }
     register({
-      name: fullName,
+      firstName: firstName.trim(),
+      middleName: middleName.trim(),
+      lastName: lastName.trim(),
       email: email.trim(),
-      phone: '', // You can add a phone field later if needed
+      password: password.trim(), 
     });
   };
 
@@ -252,7 +260,7 @@ const SignInScreen = ({ navigation }: Props) => {
         >
           <View style={styles.content}>
             <View style={styles.heroCard}>
-              <Text style={styles.eyebrow}>fleXpark</Text>
+              <Text style={styles.eyebrow}>FleXpark</Text>
               <Text style={styles.title}>Create your Parking Account</Text>
               <Text style={styles.subtitle}>
                 Register to discover available parking spots near you in seconds.

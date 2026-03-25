@@ -1,7 +1,20 @@
 export type UserProfile = {
-  name: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
   email: string;
-  phone: string;
+  password: string;
+  confirmPassword: string;
+  name?: string;
+  fullName?: string;
+};
+
+export type UpdateProfile = {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
+  password: string;
 };
 
 export type ParkingCoordinate = {

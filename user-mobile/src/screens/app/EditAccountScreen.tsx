@@ -20,21 +20,34 @@ type Props = NativeStackScreenProps<AppStackParamList, 'EditAccount'>;
 
 const EditAccountScreen = ({ navigation }: Props) => {
   const { user, logout, updateProfile } = useAuth();
-  const [name, setName] = useState(user?.name ?? '');
+  const [firstName, setFirstName] = useState(user?.firstName ?? '');
+  const [middleName, setMiddleName] = useState(user?.middleName ?? '');
+  const [lastName, setLastName] = useState(user?.lastName ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
-  const [password, setPassword] = useState(user?.phone ?? '');
+  const [password, setPassword] = useState(user?.password ?? '');
 
   useEffect(() => {
-    setName(user?.name ?? '');
+    setFirstName(user?.firstName ?? '');
+    setMiddleName(user?.middleName ?? '');
+    setLastName(user?.lastName ?? '');
     setEmail(user?.email ?? '');
-    setPassword(user?.phone ?? '');
+    setPassword(user?.password ?? '');
   }, [user]);
 
-  const isDisabled = useMemo(() => !name.trim() || !email.trim() || !password.trim(), [email, name, password]);
+  const isDisabled = useMemo(
+    () =>
+      !firstName.trim() ||
+      !lastName.trim() ||
+      !email.trim() ||
+      !password.trim(),
+    [email, firstName, lastName, password]
+  );
 
   const handleSave = () => {
     updateProfile({
-      name: name.trim(),
+      firstName: firstName.trim(),
+      middleName: middleName.trim(),
+      lastName: lastName.trim(),
       email: email.trim(),
       password: password.trim(),
     });
@@ -44,13 +57,39 @@ const EditAccountScreen = ({ navigation }: Props) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView behavior={Platform.select({ ios: 'padding', android: undefined })} style={styles.flex}>
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+      <KeyboardAvoidingView
+        behavior={Platform.select({ ios: 'padding', android: undefined })}
+        style={styles.flex}
+      >
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.card}>
             <Text style={styles.title}>Edit Account</Text>
-            <Text style={styles.subtitle}>Update your profile information and keep your contact details current.</Text>
+            <Text style={styles.subtitle}>
+              Update your profile information and keep your contact details current.
+            </Text>
 
-            <AppInput label="Full Name" placeholder="Enter your full name" value={name} onChangeText={setName} />
+            <AppInput
+              label="First Name"
+              placeholder="Enter your first name"
+              value={firstName}
+              onChangeText={setFirstName}
+            />
+            <AppInput
+              label="Middle Name"
+              placeholder="Enter your middle name"
+              value={middleName}
+              onChangeText={setMiddleName}
+            />
+            <AppInput
+              label="Last Name"
+              placeholder="Enter your last name"
+              value={lastName}
+              onChangeText={setLastName}
+            />
             <AppInput
               label="Email"
               placeholder="Enter your email"
@@ -60,16 +99,24 @@ const EditAccountScreen = ({ navigation }: Props) => {
               autoCapitalize="none"
             />
             <AppInput
-                label="Password"
-                placeholder="At least 6 characters"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
+              label="Password"
+              placeholder="At least 6 characters"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
             />
 
             <View style={styles.buttonGroup}>
-              <AppButton title="Save Changes" onPress={handleSave} disabled={isDisabled} />
-              <AppButton title="Cancel" onPress={() => navigation.goBack()} variant="secondary" />
+              <AppButton
+                title="Save Changes"
+                onPress={handleSave}
+                disabled={isDisabled}
+              />
+              <AppButton
+                title="Cancel"
+                onPress={() => navigation.goBack()}
+                variant="secondary"
+              />
               <AppButton title="Log Out" onPress={logout} variant="ghost" />
             </View>
           </View>

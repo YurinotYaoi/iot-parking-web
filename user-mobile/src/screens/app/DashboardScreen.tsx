@@ -31,7 +31,7 @@ const DashboardScreen = ({ navigation }: Props) => {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={styles.headerContainer}>
-            <Header name={user?.name ?? 'Driver'} onPressSettings={() => navigation.navigate('EditAccount')} />
+            <Header name={user?.firstName ?? 'Driver'} onPressSettings={() => navigation.navigate('EditAccount')} />
             <View style={styles.summaryCard}>
               <Text style={styles.summaryTitle}>Nearby Parking Availability</Text>
               <Text style={styles.summaryText}>

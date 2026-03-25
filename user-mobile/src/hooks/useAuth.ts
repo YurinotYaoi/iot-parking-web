@@ -1,5 +1,5 @@
 import { createContext, createElement, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
-import type { UserProfile } from '../types/parking';
+import type { UpdateProfile, UserProfile } from '../types/parking';
 
 type AuthContextValue = {
   user: UserProfile | null;
@@ -7,13 +7,16 @@ type AuthContextValue = {
   login: (profile?: Partial<UserProfile>) => void;
   logout: () => void;
   register: (profile?: Partial<UserProfile>) => void;
-  updateProfile: (profile: UserProfile) => void;
+  updateProfile: (profile: UpdateProfile) => void;
 };
 
 const defaultUser: UserProfile = {
-  name: 'Alex Johnson',
+  firstName: 'Alex',
+  middleName: '',
+  lastName: 'Johnson',
   email: 'alex.johnson@example.com',
-  phone: '+1 555 010 2030',
+  password: 'password123',
+  confirmPassword: 'password123',
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -22,15 +25,18 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider = ({ children }: AuthProviderProps) => {}
   const [user, setUser] = useState<UserProfile | null>(null);
 
   const login = useCallback((profile?: Partial<UserProfile>) => {
     setUser({
-      name: profile?.name ?? defaultUser.name,
+      firstName: profile?.firstName ?? defaultUser.firstName,
+      middleName: profile?.middleName ?? defaultUser.middleName,
+      lastName: profile?.lastName ?? defaultUser.lastName,
       email: profile?.email ?? defaultUser.email,
-      phone: profile?.phone ?? defaultUser.phone,
-    });
+      password: profile?.password ?? defaultUser.password,
+      confirmPassword: profile?.confirmPassword ?? profile?.password ?? defaultUser.confirmPassword,
+  });
   }, []);
 
   const logout = useCallback(() => {
@@ -39,31 +45,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const register = useCallback((profile?: Partial<UserProfile>) => {
     setUser({
-      name: profile?.name ?? defaultUser.name,
+      firstName: profile?.firstName ?? defaultUser.firstName,
+      middleName: profile?.middleName ?? defaultUser.middleName,
+      lastName: profile?.lastName ?? defaultUser.lastName,
       email: profile?.email ?? defaultUser.email,
-      phone: profile?.phone ?? defaultUser.phone,
+      password: profile?.password ?? defaultUser.password,
+      confirmPassword: profile?.confirmPassword ?? profile?.password ?? defaultUser.confirmPassword,
     });
   }, []);
 
-  const updateProfile = useCallback((profile: UserProfile) => {
-    setUser(profile);
+  const updateProfile = useCallback((profile: UpdateProfile) => {
+    setUser((currentUser) => ({
+      firstName: profile.firstName,
+      middleName: profile.middleName,
+      lastName: profile.lastName,
+      email: profile.email,
+      password: profile.password,
+      confirmPassword: currentUser?.confirmPassword ?? profile.password,
+    }));
   }, []);
-
-  const value = useMemo(
-    () => ({
-      user,
-      isAuthenticated: user !== null,
-      login,
-      logout,
-      register,
-      updateProfile,
-    }),
-    [login, logout, register, updateProfile, user]
-  );
-
-  return createElement(AuthContext.Provider, { value }, children);
-};
-
 export const useAuth = () => {
   const context = useContext(AuthContext);
 
@@ -71,5 +71,4 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
 
-  return context;
-};
+  return context;};
