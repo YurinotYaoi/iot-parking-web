@@ -1,4 +1,4 @@
-import { createContext, createElement, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import type { UpdateProfile, UserProfile } from '../types/parking';
 
 type AuthContextValue = {
@@ -25,7 +25,7 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {}
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<UserProfile | null>(null);
 
   const login = useCallback((profile?: Partial<UserProfile>) => {
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {}
       email: profile?.email ?? defaultUser.email,
       password: profile?.password ?? defaultUser.password,
       confirmPassword: profile?.confirmPassword ?? profile?.password ?? defaultUser.confirmPassword,
-  });
+    });
   }, []);
 
   const logout = useCallback(() => {
@@ -55,20 +55,38 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {}
   }, []);
 
   const updateProfile = useCallback((profile: UpdateProfile) => {
-    setUser((currentUser) => ({
-      firstName: profile.firstName,
-      middleName: profile.middleName,
-      lastName: profile.lastName,
-      email: profile.email,
-      password: profile.password,
-      confirmPassword: currentUser?.confirmPassword ?? profile.password,
-    }));
+    setUser((currentUser) => {
+      if (!currentUser) return null;
+      return {
+        ...currentUser,
+        ...profile,
+        confirmPassword: currentUser.confirmPassword,
+      };
+    });
   }, []);
+
+  // You must create the 'value' object to satisfy the AuthContextValue type
+  const value = useMemo(() => ({
+    user,
+    isAuthenticated: !!user,
+    login,
+    logout,
+    register,
+    updateProfile,
+  }), [user, login, logout, register, updateProfile]);
+
+  // This return block was missing and is required for Context to work
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
-
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-
-  return context;};
+  return context;
+};
