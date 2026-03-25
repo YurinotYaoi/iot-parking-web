@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}> 
-      <body className="antialiased">
+      <body className="antialiased overflow-x-hidden">
         <ThemeProvider attribute="class" enableSystem defaultTheme="system">
           <Navbar />
           {children}
