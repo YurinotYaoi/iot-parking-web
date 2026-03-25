@@ -2,20 +2,57 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebaseClient";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const router = useRouter();
 
-  const handleNavigation = () => {
-    router.push('/dashboard');
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      // 1️⃣ Login with Firebase
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+
+      // 2️⃣ Get Firebase ID Token
+      const token = await cred.user.getIdToken();
+
+      // 3️⃣ Call your Next.js login API with token
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Login failed");
+        return;
+      }
+
+      // 4️⃣ Navigate to dashboard on success
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      console.log("LOGIN ERROR:", err);
+
+      // Safe error handling
+      if (err instanceof Error) {
+        alert(err.message);
+      } else if (typeof err === "object" && err !== null && "code" in err) {
+        const firebaseErr = err as { code?: string; message?: string };
+        alert(firebaseErr.code || firebaseErr.message || "Login failed");
+      } else {
+        alert("Login failed");
+      }
+    }
   };
 
   return (
-    <form className="flex flex-col">
+    <form className="flex flex-col" onSubmit={handleLogin}>
       <label htmlFor="email" className="text-sm font-medium text-gray-700">
         Email
       </label>
@@ -37,14 +74,13 @@ const LoginForm = () => {
         onChange={(e) => setPassword(e.target.value)}
         className="block w-full rounded-md border-2 border-gray-500 p-2 text-sm text-gray-900 focus:border-gray-600"
       />
+
       <button
-        type="button"
+        type="submit"
         className="w-full rounded-md bg-blue-500 py-2 px-4 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-4"
-        onClick={handleNavigation}
       >
         Login
       </button>
-
     </form>
   );
 };

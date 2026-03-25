@@ -1,6 +1,6 @@
-import { verifyToken } from '@/services/authService';
-import { getUserByUid } from '@/services/authService';
+import { verifyToken, getUserByUid } from '@/services/authService';
 import { successResponse, errorResponse } from '@/utils/response';
+
 
 export async function POST(req) {
   try {
@@ -11,7 +11,7 @@ export async function POST(req) {
     const userProfile = await getUserByUid(decoded.uid);
 
     return successResponse({ uid: decoded.uid, ...userProfile });
-  } catch (err) {
+  } catch (error) {
     return errorResponse('Invalid or expired token', 401);
   }
 }
