@@ -75,7 +75,7 @@ export default function DashboardScreen() {
             <div>
               <Button className="rounded-sm mr-1" 
               onClick={handleShowCSModal}>Create Sensor</Button>
-              <Button className="rounded-sm" onClick={() => router.push("/dashboard/layouts")}>
+              <Button className="rounded-sm" onClick={() => router.push("/dashboard/layout")}>
                 Layouts
               </Button>
             </div>

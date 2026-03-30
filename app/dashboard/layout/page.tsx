@@ -16,7 +16,7 @@ export default function LayoutsScreen() {
                 <FaArrowLeft />
                 Back
               </Button>
-              <Button className="rounded-sm">
+              <Button className="rounded-sm" onClick={() => router.push("/dashboard/createlayout")}>
                 Create Layout
               </Button>
             </div>
