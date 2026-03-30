@@ -3,15 +3,27 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useEffect } from "react";
 import { auth } from "@/lib/firebaseClient";
+import { onAuthStateChanged } from "firebase/auth";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
+  useEffect(() => {
+  const unsub = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      router.push("/dashboard");
+    }
+  });
+
+  return () => unsub();
+  }, []);  
+
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
       // 1️⃣ Login with Firebase
@@ -29,13 +41,10 @@ const LoginForm = () => {
 
       const data = await res.json();
 
-      if (!res.ok) {
+      if (!res) {
         alert(data.message || "Login failed");
-        return;
       }
-
-      // 4️⃣ Navigate to dashboard on success
-      router.push("/dashboard");
+      
     } catch (err: unknown) {
       console.log("LOGIN ERROR:", err);
 
@@ -53,7 +62,8 @@ const LoginForm = () => {
 
   return (
     <form className="flex flex-col" onSubmit={handleLogin}>
-      <label htmlFor="email" className="text-sm font-medium text-gray-700">
+      <label htmlFor="email" className="text-sm font-medium 
+      .dark:text-zinc-50">
         Email
       </label>
       <input
@@ -61,10 +71,11 @@ const LoginForm = () => {
         id="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="block w-full rounded-md border-2 border-gray-500 p-2 text-sm text-gray-900 focus:border-gray-600"
+        className=".dark:text-zinc-50"
       />
 
-      <label htmlFor="password" className="text-sm font-medium text-gray-700">
+      <label htmlFor="password" className="text-sm font-medium
+      .dark:text-zinc-50">
         Password
       </label>
       <input
@@ -72,7 +83,7 @@ const LoginForm = () => {
         id="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="block w-full rounded-md border-2 border-gray-500 p-2 text-sm text-gray-900 focus:border-gray-600"
+        className=".dark:text-zinc-50"
       />
 
       <button

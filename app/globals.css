@@ -126,4 +126,20 @@
   html {
     @apply font-mono;
   }
+
+  input {
+    @apply block w-full rounded-md border-2 border-gray-500 p-2 text-sm;
+  }
+  .dark input {
+    @apply border-gray-700 bg-gray-800 text-zinc-50;
+  }
+  label {
+    @apply text-sm font-medium;
+  }
+  .dark label {
+    @apply text-zinc-50;
+  }
+  button {
+    @apply cursor-pointer;
+  }
 }
