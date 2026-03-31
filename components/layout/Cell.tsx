@@ -1,6 +1,6 @@
 "use client";
 
-import { CellData } from "@/types/layout";
+import { CellData } from "@/models/layout";
 
 interface Props {
   data: CellData;
