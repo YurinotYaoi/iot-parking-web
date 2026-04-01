@@ -41,9 +41,17 @@ const LoginForm = () => {
 
       const data = await res.json();
 
-      if (!res) {
-        alert(data.message || "Login failed");
+      if (!res.ok) {
+        alert(data.error || "Login failed");
+        return;
       }
+
+      // 4️⃣ Store token and user data in localStorage for authenticated requests
+      // Note: data.data contains the actual user info because successResponse wraps it
+      localStorage.setItem('flexpark_auth', JSON.stringify({ token, user: { ...data.data, password } }));
+      
+      // 5️⃣ Redirect to dashboard
+      router.push("/dashboard");
       
     } catch (err: unknown) {
       console.log("LOGIN ERROR:", err);
