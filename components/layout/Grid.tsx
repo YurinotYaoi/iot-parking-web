@@ -1,7 +1,7 @@
 "use client";
 
 import Cell from "./Cell";
-import { GridType, CellType } from "@/types/layout";
+import { GridType, CellType } from "@/models/layout";
 
 interface GridProps {
   grid: GridType;

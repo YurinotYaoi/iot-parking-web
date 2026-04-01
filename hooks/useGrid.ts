@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GridType, CellType } from "@/types/layout";
+import { GridType, CellType } from "@/models/layout";
 
 const createGrid = (rows: number, cols: number): GridType => {
   return Array.from({ length: rows }, () =>

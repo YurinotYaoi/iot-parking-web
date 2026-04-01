@@ -1,6 +1,6 @@
 "use client";
 
-import { CellType } from "@/types/layout";
+import { CellType } from "@/models/layout";
 
 interface Props {
   selectedTool: CellType;

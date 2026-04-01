@@ -4,7 +4,7 @@ import { useState } from "react";
 import Grid from "@/components/layout/Grid";
 import Toolbar from "@/components/layout/Toolbar";
 import { useGrid } from "@/hooks/useGrid";
-import { CellType } from "@/types/layout";
+import { CellType } from "@/models/layout";
 
 export default function CreateLayoutPage() {
   const [rows, setRows] = useState(3);
