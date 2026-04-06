@@ -39,8 +39,7 @@ export async function deleteUser(uid) {
   return { uid, deleted: true };
 }
 
-export async function setUserActiveStatus(uid, isActive) {
-  await db.ref(`users/${uid}`).update({ isActive, updatedAt: Date.now() });
-  await admin.auth().updateUser(uid, { disabled: !isActive });
-  return { uid, isActive };
+export async function updateUserLocation(uid, location) {
+  await db.ref(`users/${uid}`).update({ location, updatedAt: Date.now() });
+  return { uid, location };
 }

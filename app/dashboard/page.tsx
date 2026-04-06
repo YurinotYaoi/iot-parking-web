@@ -12,6 +12,7 @@ import type { UserProfile } from "@/models/user";
 
 import SensorList from "@/components/SensorList";
 import CreateSensorModal from "@/components/modals/CreateSensorModal";
+import LocationModal from "@/components/modals/LocationModal";
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -41,9 +42,35 @@ export default function DashboardScreen() {
 
   // ✅ MODAL FIX (IMPORTANT)
   const [showCSModal, setShowCSModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
 
   const openCSModal = () => setShowCSModal(true);
   const closeCSModal = () => setShowCSModal(false);
+
+  const openLocationModal = () => setShowLocationModal(true);
+  const closeLocationModal = () => setShowLocationModal(false);
+
+  const handleSaveLocation = async (name: string, link: string) => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      if (!token) return;
+      await fetch('/api/users/location', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name, link }),
+      });
+      // Refresh user data
+      if (auth.currentUser) {
+        const data = await getUser(auth.currentUser.uid);
+        setUser(data);
+      }
+    } catch (err) {
+      console.error('Failed to save location:', err);
+    }
+  };
 
   return (
     <main className="flex flex-col w-full items-center justify-center">
@@ -53,10 +80,18 @@ export default function DashboardScreen() {
         {showCSModal && (
           <CreateSensorModal onClose={closeCSModal} />
         )}
+        {showLocationModal && (
+          <LocationModal
+            onClose={closeLocationModal}
+            onSave={handleSaveLocation}
+            initialName={user?.location?.name || ""}
+            initialLink={user?.location?.link || ""}
+          />
+        )}
 
         {/* LEFT PANEL */}
         <div className="w-[30%] p-2">
-          <div className="h-full w-full border-2 border-gray-600 rounded-md p-1">
+          <div className="h-full w-full border-2 border-gray-600 bg-white rounded-md p-1 dark:border-slate-700 dark:bg-slate-900">
             <div className="p-10">
               {user ? 
                 <h1 className="text-center text-3xl">
@@ -70,10 +105,25 @@ export default function DashboardScreen() {
             <div className="text-2xl">
               <Button
                 className="w-full rounded-sm justify-start"
-                onClick={openCSModal}
+                onClick={openLocationModal}
               >
-                <FaMapLocationDot className="!size-5" /> | Location
+                <FaMapLocationDot className="!size-5" /> | {user?.location?.name || "Location"}
               </Button>
+
+              {user?.location?.link && (
+                <div className="mt-4">
+                  <iframe
+                    src={user.location.link}
+                    width="100%"
+                    height="600"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="rounded-md"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -6,4 +6,8 @@ export interface UserProfile {
   phoneNumber?: string
   role?: string
   isActive?: boolean
+  location?: {
+    name: string
+    link: string
+  }
 }
