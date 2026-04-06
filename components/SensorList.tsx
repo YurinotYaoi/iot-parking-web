@@ -1,46 +1,123 @@
 "use client";
 
-import { DEFAULT_SENSORS, Sensor } from "@/models/sensor.model";
+import { useEffect, useState } from "react";
+import { auth } from "@/lib/firebaseClient";
 import { Button } from "./ui/button";
-import { useState } from "react"
-import EditSensorModal from "@/components/modals/EditSensorModal"
+import EditSpotModal from "@/components/modals/EditSpotModal";
+
+type SensorInfo = {
+  sensorId: string;
+  deviceId: string;
+  status?: string;
+  assigned?: boolean;
+};
+
+type SpotRow = {
+  slotId: string;
+  slotName: string;
+  rowNo: string;
+  columnNo: string;
+  floor: string;
+  vehicleType?: string;
+  status: string;
+  ownerId?: string;
+  layoutId?: string;
+  lotId?: string;
+  sensor?: SensorInfo | null;
+};
 
 export default function SensorList() {
-  const sensors: Sensor[] = DEFAULT_SENSORS
-  const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null)
-  const handleShowESModal = () => {};
+  const [spots, setSpots] = useState<SpotRow[]>([]);
+  const [selectedSpot, setSelectedSpot] = useState<SpotRow | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+
+  const fetchSpots = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        if (showLoading) setLoading(false);
+        return;
+      }
+
+      const token = await user.getIdToken();
+      const res = await fetch("/api/spots", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const response = await res.json();
+      setSpots(response.data || []);
+      setLastUpdated(new Date().toLocaleTimeString());
+    } catch (error) {
+      console.error("Error fetching spots:", error);
+    } finally {
+      if (showLoading) setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSpots();
+    const interval = setInterval(() => fetchSpots(false), 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const closeModal = () => setSelectedSpot(null);
+  const handleRefresh = () => {
+    closeModal();
+    fetchSpots();
+  };
 
   return (
-    <div className="h-[770]  overflow-y-auto rounded">
-      <EditSensorModal sensor={selectedSensor} handleShowESModal={() => setSelectedSensor(null)} />
-        <div className="grid grid-cols-6 border-b">
-          <div className="p-3">Sensor Name</div>
-          <div className="p-3 text-center">Floor</div>
-          <div className="p-3 text-center">Column</div>
-          <div className="p-3 text-center">Row</div>
-          <div className="p-3 text-center">Status</div>
-          <div className="p-3 text-center">Edit</div>
-        </div>
-      {sensors.map((sensor: Sensor) => (
-        <div key={sensor.id} className="grid grid-cols-6 border-b">
-          <h3 className="p-3">{sensor.name}</h3>
-          <p className="p-3 text-center">{sensor.floor}</p>
-          <p className="p-3 text-center">{sensor.row}</p>
-          <p className="p-3 text-center">{sensor.column}</p>
+    <div className="h-[770px] overflow-y-auto rounded  dark:text-slate-100 shadow-sm">
+      <EditSpotModal spot={selectedSpot} onClose={closeModal} onSaved={handleRefresh} />
 
-          <div className="p-3">
-            {sensor.status === "free"
-              ? "🟢 Free"
-              : "🔴 Occupied"}
-          </div>
+      <div className="flex items-center justify-between gap-2 border-b bg-slate-100 px-3 py-2 text-sm dark:bg-slate-800">
+        <span className="font-semibold">Parking slots</span>
+        <span className="text-slate-500 dark:text-slate-400">Auto-refresh every 5s · last updated {lastUpdated || "—"}</span>
+      </div>
 
-          <div className="p-3 flex justify-center"><Button className="w-full" onClick={() => {
-            setSelectedSensor(sensor), 
-            handleShowESModal
-            }}>Edit</Button>
-          </div>
-        </div>
-      ))}
+      <div className="grid grid-cols-7 border-b bg-slate-100 dark:bg-slate-800">
+        <div className="p-3 font-semibold">Slot Name</div>
+        <div className="p-3 text-center font-semibold">Floor</div>
+        <div className="p-3 text-center font-semibold">Column</div>
+        <div className="p-3 text-center font-semibold">Row</div>
+        <div className="p-3 text-center font-semibold">Status</div>
+        <div className="p-3 text-center font-semibold">Sensor</div>
+        <div className="p-3 text-center font-semibold">Action</div>
+      </div>
+
+      {loading && (
+        <div className="col-span-7 p-4 text-center">Loading slots...</div>
+      )}
+      {!loading && spots.length === 0 && (
+        <div className="p-4 text-center">No slots found.</div>
+      )}
+      {!loading && spots.length > 0 &&
+        spots.map((spot) => {
+          const displayStatus = spot.sensor?.status || spot.status;
+          let statusDisplay = "🟢 Available";
+          if (displayStatus === "occupied" || displayStatus === "offline") {
+            statusDisplay = "🔴 " + (displayStatus === "occupied" ? "Occupied" : "Offline");
+          } else if (displayStatus === "online") {
+            statusDisplay = "🟡 Online";
+          }
+
+          return (
+            <div key={spot.slotId} className="grid grid-cols-7 border-b hover:bg-slate-50 dark:hover:bg-slate-800">
+              <div className="p-3">{spot.slotName}</div>
+              <div className="p-3 text-center">{spot.floor || "-"}</div>
+              <div className="p-3 text-center">{spot.columnNo || "-"}</div>
+              <div className="p-3 text-center">{spot.rowNo || "-"}</div>
+              <div className="p-3 text-center">{statusDisplay}</div>
+              <div className="p-3 text-center">{spot.sensor?.deviceId || "None"}</div>
+              <div className="p-3 flex justify-center">
+                <Button className="w-full" onClick={() => setSelectedSpot(spot)}>
+                  Edit
+                </Button>
+              </div>
+            </div>
+          );
+        })}
     </div>
   );
 }

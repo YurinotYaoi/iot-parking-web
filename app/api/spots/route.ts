@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/utils/withAuth";
-import { createSpot } from "@/services/spotService";
+import { createSpot, getAllSpots } from "@/services/spotService";
+import { getSensorBySpot } from "@/services/sensorService";
+
+export const GET = withAuth(async (req: NextRequest) => {
+  try {
+    const spots = await getAllSpots();
+    const spotsWithSensor = await Promise.all(
+      spots.map(async (spot) => {
+        const sensor = await getSensorBySpot(spot.slotId);
+        return { ...spot, sensor };
+      })
+    );
+    return NextResponse.json({ success: true, data: spotsWithSensor });
+  } catch (err: any) {
+    console.error("GET /api/spots error:", err);
+    return NextResponse.json({ message: err.message }, { status: 500 });
+  }
+});
 
 export const POST = withAuth(async (req: NextRequest) => {
   try {

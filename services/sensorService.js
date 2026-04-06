@@ -58,6 +58,12 @@ export async function updateSensor(sensorId, updates) {
     throw new Error(`Invalid sensor status. Must be: ${VALID_SENSOR_STATUSES.join(', ')}`);
   }
   await db.ref(`sensors/${sensorId}`).update(sanitized);
+  
+  // Sync sensor status to spot if assigned
+  if (sanitized.spotId && sanitized.status) {
+    await updateSpotStatus(sanitized.spotId, sanitized.status === 'offline' ? 'occupied' : 'available');
+  }
+  
   return { sensorId, ...sanitized };
 }
 

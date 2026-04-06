@@ -105,7 +105,10 @@ export default function CreateSensorModal({ onClose }: Props) {
       const assignedSensor = await assignRes.json();
       if (!assignRes.ok) throw new Error(assignedSensor.message || "Failed to assign sensor");
 
-      // 3️⃣ Update spot status to occupied
+      // 3️⃣ Sync spot status to match sensor status
+      const sensorStatus = assignedSensor.data?.status || 'online';
+      const spotStatus = sensorStatus === 'offline' ? 'occupied' : 'available';
+      
       const updateSpotRes = await fetch(`/api/spots/${spotId}`, {
         method: "PATCH",
         headers: {
@@ -113,7 +116,7 @@ export default function CreateSensorModal({ onClose }: Props) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          status: "occupied",
+          status: spotStatus,
         }),
       });
 
@@ -135,28 +138,28 @@ export default function CreateSensorModal({ onClose }: Props) {
       onMouseDown={onClose}
     >
       <div
-        className="bg-white p-6 rounded-xl w-[400px]"
+        className="bg-white p-6 rounded-xl w-[400px] dark:bg-slate-900 dark:text-slate-100"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <h2 className="text-xl font-semibold mb-4">Create Slot & Assign Sensor</h2>
 
-        <label className="block mb-1 text-sm">Slot Name</label>
+        <label className="block mb-1 text-sm text-slate-700 dark:text-slate-200">Slot Name</label>
         <input
-          className="w-full border p-2 rounded mb-2"
+          className="w-full border border-slate-300 bg-white p-2 rounded mb-2 text-slate-900 outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
           value={slotName}
           onChange={(e) => setSlotName(e.target.value)}
         />
 
-        <label className="block mb-1 text-sm">Vehicle Type</label>
+        <label className="block mb-1 text-sm text-slate-700 dark:text-slate-200">Vehicle Type</label>
         <input
-          className="w-full border p-2 rounded mb-4"
+          className="w-full border border-slate-300 bg-white p-2 rounded mb-4 text-slate-900 outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
           value={vehicleType}
           onChange={(e) => setVehicleType(e.target.value)}
         />
 
-        <label className="block mb-2 text-sm">Select Sensor</label>
+        <label className="block mb-2 text-sm text-slate-700 dark:text-slate-200">Select Sensor</label>
         <select
-          className="w-full border p-2 mb-4 rounded"
+          className="w-full border border-slate-300 bg-white p-2 mb-4 rounded text-slate-900 outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
           value={selectedSensor}
           onChange={(e) => setSelectedSensor(e.target.value)}
         >
