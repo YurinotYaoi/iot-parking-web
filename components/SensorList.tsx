@@ -109,7 +109,7 @@ export default function SensorList() {
               <div className="p-3 text-center">{spot.columnNo || "-"}</div>
               <div className="p-3 text-center">{spot.rowNo || "-"}</div>
               <div className="p-3 text-center">{statusDisplay}</div>
-              <div className="p-3 text-center">{spot.sensor?.deviceId || "None"}</div>
+              <div className="p-3 text-center">{spot.sensor?.sensorId || "None"}</div>
               <div className="p-3 flex justify-center">
                 <Button className="w-full" onClick={() => setSelectedSpot(spot)}>
                   Edit

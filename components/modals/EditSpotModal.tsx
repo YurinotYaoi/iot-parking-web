@@ -37,7 +37,6 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
   const [rowNo, setRowNo] = useState("");
   const [columnNo, setColumnNo] = useState("");
   const [floor, setFloor] = useState("");
-  const [status, setStatus] = useState("available");
   const [saving, setSaving] = useState(false);
   const [unassigning, setUnassigning] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -49,7 +48,6 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
     setRowNo(spot.rowNo || "");
     setColumnNo(spot.columnNo || "");
     setFloor(spot.floor || "");
-    setStatus(spot.status || "available");
   }, [spot]);
 
   if (!spot) return null;
@@ -70,7 +68,6 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
         body: JSON.stringify({
           slotName,
           vehicleType,
-          status,
         }),
       });
 
@@ -221,29 +218,8 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
             </div>
           </div>
 
-          <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-            Row, column, and floor are shown for reference only. They are assigned later by the layout grid.
-          </div>
-
-          <div>
-            <label htmlFor="slot-status" className="block text-sm font-medium text-slate-900 dark:text-slate-100">
-              Status
-            </label>
-            <select
-              id="slot-status"
-              className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="available">Available</option>
-              <option value="occupied">Occupied</option>
-              <option value="reserved">Reserved</option>
-              <option value="disabled">Disabled</option>
-            </select>
-          </div>
-
           <div className="space-y-1 text-sm text-slate-600 dark:text-slate-300">
-            <p>Sensor: {spot.sensor?.deviceId || "None"}</p>
+            <p>Device Id: {spot.sensor?.deviceId || "None"}</p>
             <p>Owner: {spot.ownerId || "—"}</p>
             <p>Layout ID: {spot.layoutId || "—"}</p>
             <p>Lot ID: {spot.lotId || "—"}</p>

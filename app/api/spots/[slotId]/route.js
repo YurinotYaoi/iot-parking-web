@@ -15,6 +15,7 @@ export const GET = withAuth(async (req, { params }) => {
     const { slotId } = await params;
     const spot = await getSpotById(slotId);
     if (!spot) return errorResponse('Spot not found', 404);
+    if (spot.ownerId !== req.user.uid) return errorResponse('Forbidden — you do not own this spot', 403);
     return successResponse({ slotId, ...spot });
   } catch (err) {
     return errorResponse(err.message, 500);

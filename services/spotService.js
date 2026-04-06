@@ -43,6 +43,16 @@ export async function getSpotById(slotId) {
   return snapshot.val();
 }
 
+export async function getSpotsByOwner(ownerId) {
+  const snapshot = await db.ref('spots')
+    .orderByChild('ownerId')
+    .equalTo(ownerId)
+    .once('value');
+  const data = snapshot.val();
+  if (!data) return [];
+  return Object.entries(data).map(([slotId, spot]) => ({ slotId, ...spot }));
+}
+
 export async function createSpot(data) {
   const slotId = uuidv4();
   const spot = {
