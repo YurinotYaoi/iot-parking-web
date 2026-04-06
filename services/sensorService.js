@@ -49,7 +49,7 @@ export async function createSensor(spotId, data) {
 }
 
 export async function updateSensor(sensorId, updates) {
-  const allowed = ['deviceId', 'status'];
+  const allowed = ['deviceId', 'status', 'spotId', 'ownerId', 'assigned'];
   const sanitized = {};
   for (const key of allowed) {
     if (updates[key] !== undefined) sanitized[key] = updates[key];

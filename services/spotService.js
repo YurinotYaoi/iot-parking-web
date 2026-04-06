@@ -43,16 +43,18 @@ export async function getSpotById(slotId) {
   return snapshot.val();
 }
 
-export async function createSpot(lotId, layoutId, data) {
+export async function createSpot(data) {
   const slotId = uuidv4();
   const spot = {
-    lotId,
-    layoutId,
-    label: data.label,
-    rowNo: data.rowNo,
-    columnNo: data.columnNo,
+    lotId: data.lotId || '',
+    layoutId: data.layoutId || '',
+    slotName: data.slotName,
+    rowNo: data.rowNo || '',
+    columnNo: data.columnNo || '',
+    floor: data.floor || '',
     vehicleType: VALID_VEHICLE_TYPES.includes(data.vehicleType) ? data.vehicleType : 'any',
     status: 'available',
+    ownerId: data.ownerId,
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -61,7 +63,7 @@ export async function createSpot(lotId, layoutId, data) {
 }
 
 export async function updateSpot(slotId, updates) {
-  const allowed = ['label', 'rowNo', 'columnNo', 'vehicleType', 'status'];
+  const allowed = ['slotName', 'rowNo', 'columnNo', 'vehicleType', 'status', 'floor', 'layoutId', 'lotId'];
   const sanitized = {};
   for (const key of allowed) {
     if (updates[key] !== undefined) sanitized[key] = updates[key];

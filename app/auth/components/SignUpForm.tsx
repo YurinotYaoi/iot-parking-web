@@ -14,30 +14,35 @@ const SignUpForm = () => {
   const router = useRouter();
 
   const handleRegister = async () => {
+  if (password !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
 
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        firstName,
-        middleName,
-        lastName,
-      }),
-    });
+  const res = await fetch("/api/auth/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      password,
+      firstName,
+      middleName,
+      lastName,
+      secretKey: process.env.NEXT_PUBLIC_ADMIN_SECRET_KEY, // 🔥 AUTO SEND
+    }),
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (res.status > 201 && res.status < 300) {
-      router.push('/dashboard');
-      alert("Registration successful!");
-    } else {
-      alert(data.message);
-    }
-  };
+  if (res.status >= 200 && res.status < 300) {
+    alert("Registration successful!");
+    router.push("/dashboard");
+  } else {
+    alert(data.message || "Something went wrong");
+  }
+};
 
   return (
     <form className="flex flex-col">

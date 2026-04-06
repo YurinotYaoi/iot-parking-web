@@ -25,13 +25,25 @@ export const PATCH = withAuth(async (req, { params }) => {
     const { sensorId } = await params;
     const sensor = await getSensorById(sensorId);
     if (!sensor) return errorResponse('Sensor not found', 404);
+
     const body = await req.json();
-    const updated = await updateSensor(sensorId, body);
+    const updates = {
+      ...body,
+    };
+
+    if (body.spotId && !body.ownerId) {
+      updates.ownerId = req.user.uid;
+    }
+    if (body.spotId) {
+      updates.assigned = true;
+    }
+
+    const updated = await updateSensor(sensorId, updates);
     return successResponse(updated);
   } catch (err) {
     return errorResponse(err.message, 500);
   }
-}, 'admin');
+});
 
 export const DELETE = withAuth(async (req, { params }) => {
   try {
@@ -43,4 +55,4 @@ export const DELETE = withAuth(async (req, { params }) => {
   } catch (err) {
     return errorResponse(err.message, 500);
   }
-}, 'admin');
+});

@@ -17,7 +17,7 @@ export const GET = withAuth(async (req) => {
   } catch (err) {
     return errorResponse(err.message, 500);
   }
-}, 'admin');
+});
 
 export const POST = withAuth(async (req) => {
   try {

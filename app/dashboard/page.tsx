@@ -10,27 +10,23 @@ import { getUser } from "@/services/user";
 import { useEffect, useState } from "react";
 import type { UserProfile } from "@/models/user";
 
-
 import SensorList from "@/components/SensorList";
 import CreateSensorModal from "@/components/modals/CreateSensorModal";
 
-
 export default function DashboardScreen() {
-
   const router = useRouter();
-  //Start of Logout
+
+  // ✅ Logout
   const handleLogout = async () => {
     await signOut(auth);
     router.push("/");
   };
-  //End of Logout
 
-  //Start of User Fetch
+  // ✅ User Fetch
   const [user, setUser] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
-      console.log("firebaseUser", firebaseUser);
       if (!firebaseUser) return;
       try {
         const data = await getUser(firebaseUser.uid);
@@ -42,48 +38,71 @@ export default function DashboardScreen() {
 
     return () => unsub();
   }, []);
-  //End of User Fetch
 
-  //CreateSensorModal
-  const [showCSModal, setShowCSModal] = useState(false)
-  const handleShowCSModal = () => {setShowCSModal(!showCSModal)};
+  // ✅ MODAL FIX (IMPORTANT)
+  const [showCSModal, setShowCSModal] = useState(false);
+
+  const openCSModal = () => setShowCSModal(true);
+  const closeCSModal = () => setShowCSModal(false);
 
   return (
     <main className="flex flex-col w-full items-center justify-center">
       <div className="w-screen max-w-600 flex flex-rows h-213">
 
-        {showCSModal && <CreateSensorModal handleShowCSModal={handleShowCSModal}/>}
+        {/* ✅ Modal */}
+        {showCSModal && (
+          <CreateSensorModal onClose={closeCSModal} />
+        )}
 
+        {/* LEFT PANEL */}
         <div className="w-[30%] p-2">
           <div className="h-full w-full border-2 border-gray-600 rounded-md p-1">
             <div className="p-10">
               {user ? 
-              <h1 className="text-center text-3xl">{user.firstName} {user.lastName}</h1> : 
-              <h1 className="text-center text-3xl">Loading user...</h1>}
+                <h1 className="text-center text-3xl">
+                  {user.firstName} {user.lastName}
+                </h1> : 
+                <h1 className="text-center text-3xl">
+                  Loading user...
+                </h1>}
             </div>
+
             <div className="text-2xl">
-              <Button className="w-full rounded-sm justify-start" onClick={handleShowCSModal}>
-                <FaMapLocationDot className="!size-5" /> | 
-                Location
+              <Button
+                className="w-full rounded-sm justify-start"
+                onClick={openCSModal}
+              >
+                <FaMapLocationDot className="!size-5" /> | Location
               </Button>
             </div>
           </div>
         </div>
 
+        {/* RIGHT PANEL */}
         <div className="w-[70%] p-2 flex flex-col">
           <div className="h-fit w-full flex border-2 border-gray-600 rounded-md p-1 mb-1 justify-between">
             <div>
-              <Button className="rounded-sm mr-1" 
-              onClick={handleShowCSModal}>Create Sensor</Button>
-              <Button className="rounded-sm" onClick={() => router.push("/dashboard/layout")}>
+              <Button className="rounded-sm mr-1" onClick={openCSModal}>
+                Create Sensor
+              </Button>
+
+              <Button
+                className="rounded-sm"
+                onClick={() => router.push("/dashboard/layout")}
+              >
                 Layouts
               </Button>
             </div>
+
             <div>
-              <Button className="rounded-sm mr-1" onClick={() => router.push("/dashboard/settings")}>
-                  <IoSettings />
-                  Settings
-                </Button>
+              <Button
+                className="rounded-sm mr-1"
+                onClick={() => router.push("/dashboard/settings")}
+              >
+                <IoSettings />
+                Settings
+              </Button>
+
               <Button className="rounded-sm" onClick={handleLogout}>
                 <IoLogOutOutline />
                 Logout

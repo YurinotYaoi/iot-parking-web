@@ -27,17 +27,21 @@ export const PATCH = withAuth(async (req, { params }) => {
     const spot = await getSpotById(slotId);
     if (!spot) return errorResponse('Spot not found', 404);
 
-    const lot = await getParkingLotById(spot.lotId);
-    if (lot.adminUid !== req.user.uid) {
-      return errorResponse('Forbidden — you do not own this lot', 403);
+    const lot = spot.lotId ? await getParkingLotById(spot.lotId) : null;
+    const isOwner = spot.ownerId === req.user.uid;
+    const isAdmin = lot?.adminUid === req.user.uid;
+
+    if (!isOwner && !isAdmin) {
+      return errorResponse('Forbidden — you do not own this spot or lot', 403);
     }
+
     const body = await req.json();
     const updated = await updateSpot(slotId, body);
     return successResponse(updated);
   } catch (err) {
     return errorResponse(err.message, 500);
   }
-}, 'admin');
+});
 
 export const DELETE = withAuth(async (req, { params }) => {
   try {
@@ -45,13 +49,17 @@ export const DELETE = withAuth(async (req, { params }) => {
     const spot = await getSpotById(slotId);
     if (!spot) return errorResponse('Spot not found', 404);
 
-    const lot = await getParkingLotById(spot.lotId);
-    if (lot.adminUid !== req.user.uid) {
-      return errorResponse('Forbidden — you do not own this lot', 403);
+    const lot = spot.lotId ? await getParkingLotById(spot.lotId) : null;
+    const isOwner = spot.ownerId === req.user.uid;
+    const isAdmin = lot?.adminUid === req.user.uid;
+
+    if (!isOwner && !isAdmin) {
+      return errorResponse('Forbidden — you do not own this spot or lot', 403);
     }
+
     const result = await deleteSpot(slotId);
     return successResponse(result);
   } catch (err) {
     return errorResponse(err.message, 500);
   }
-}, 'admin');
+});

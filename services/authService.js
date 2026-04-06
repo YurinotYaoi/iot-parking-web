@@ -2,26 +2,27 @@ import admin from 'firebase-admin';
 import { db } from '@/lib/firebase';
 
 
-export async function registerUser({ email, password, firstName, middleName, lastName }) {
-  const displayName = [firstName, middleName, lastName].filter(Boolean).join(' ');
-  const userRecord = await admin.auth().createUser({
+export const registerUser = async (data) => {
+  const { email, password, firstName, middleName, lastName, role } = data;
+
+  const userRecord = await adminAuth.createUser({
     email,
     password,
     displayName,
   });
 
-  // Store extra profile info in Realtime DB
-  await db.ref(`users/${userRecord.uid}`).set({
+  await db.collection("users").doc(userRecord.uid).set({
+    uid: userRecord.uid,
+    email,
     firstName,
     middleName,
     lastName,
-    email,
-    role: 'user',
-    createdAt: Date.now(),
+    role: role || "user", // fallback
+    createdAt: new Date(),
   });
 
   return userRecord;
-}
+};
 
 export async function getUserByUid(uid) {
   const snapshot = await db.ref(`users/${uid}`).once('value');
