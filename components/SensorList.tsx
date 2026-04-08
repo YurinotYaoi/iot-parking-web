@@ -12,6 +12,12 @@ type SensorInfo = {
   assigned?: boolean;
 };
 
+type LayoutInfo = {
+  layoutName: string;
+  gridRow: number | null;
+  gridCol: number | null;
+};
+
 type SpotRow = {
   slotId: string;
   slotName: string;
@@ -24,6 +30,7 @@ type SpotRow = {
   layoutId?: string;
   lotId?: string;
   sensor?: SensorInfo | null;
+  layoutInfo?: LayoutInfo | null;
 };
 
 export default function SensorList() {
@@ -78,9 +85,9 @@ export default function SensorList() {
 
       <div className="grid grid-cols-7 border-b bg-slate-100 dark:bg-slate-800">
         <div className="p-3 font-semibold">Slot Name</div>
-        <div className="p-3 text-center font-semibold">Floor</div>
-        <div className="p-3 text-center font-semibold">Column</div>
-        <div className="p-3 text-center font-semibold">Row</div>
+        <div className="p-3 text-center font-semibold">Layout Name</div>
+        <div className="p-3 text-center font-semibold">Grid Column</div>
+        <div className="p-3 text-center font-semibold">Grid Row</div>
         <div className="p-3 text-center font-semibold">Status</div>
         <div className="p-3 text-center font-semibold">Sensor</div>
         <div className="p-3 text-center font-semibold">Action</div>
@@ -105,9 +112,9 @@ export default function SensorList() {
           return (
             <div key={spot.slotId} className="grid grid-cols-7 border-b hover:bg-slate-50 dark:hover:bg-slate-800">
               <div className="p-3">{spot.slotName}</div>
-              <div className="p-3 text-center">{spot.floor || "-"}</div>
-              <div className="p-3 text-center">{spot.columnNo || "-"}</div>
-              <div className="p-3 text-center">{spot.rowNo || "-"}</div>
+              <div className="p-3 text-center">{spot.layoutInfo?.layoutName || "-"}</div>
+              <div className="p-3 text-center">{spot.layoutInfo?.gridCol || "-"}</div>
+              <div className="p-3 text-center">{spot.layoutInfo?.gridRow || "-"}</div>
               <div className="p-3 text-center">{statusDisplay}</div>
               <div className="p-3 text-center">{spot.sensor?.sensorId || "None"}</div>
               <div className="p-3 flex justify-center">

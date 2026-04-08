@@ -11,6 +11,12 @@ type SensorInfo = {
   assigned?: boolean;
 };
 
+type LayoutInfo = {
+  layoutName?: string;
+  gridRow?: number | null;
+  gridCol?: number | null;
+};
+
 type SpotRow = {
   slotId: string;
   slotName: string;
@@ -23,6 +29,7 @@ type SpotRow = {
   layoutId?: string;
   lotId?: string;
   sensor?: SensorInfo | null;
+  layoutInfo?: LayoutInfo | null;
 };
 
 type Props = {
@@ -221,7 +228,9 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
           <div className="space-y-1 text-sm text-slate-600 dark:text-slate-300">
             <p>Device Id: {spot.sensor?.deviceId || "None"}</p>
             <p>Owner: {spot.ownerId || "—"}</p>
-            <p>Layout ID: {spot.layoutId || "—"}</p>
+            <p>Layout: {spot.layoutInfo?.layoutName || spot.layoutId || "—"}</p>
+            <p>Grid Row: {(spot.layoutInfo?.gridRow ?? spot.rowNo) || "—"}</p>
+            <p>Grid Col: {(spot.layoutInfo?.gridCol ?? spot.columnNo) || "—"}</p>
             <p>Lot ID: {spot.lotId || "—"}</p>
           </div>
         </div>
@@ -230,17 +239,6 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
           <Button className="w-full" onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save changes"}
           </Button>
-
-          {spot.sensor?.sensorId ? (
-            <Button
-              variant="destructive"
-              className="w-full"
-              onClick={handleUnassign}
-              disabled={unassigning || deleting}
-            >
-              {unassigning ? "Unassigning..." : "Unassign sensor"}
-            </Button>
-          ) : null}
 
           <Button
             variant="destructive"

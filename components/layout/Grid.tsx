@@ -4,23 +4,35 @@ import Cell from "./Cell";
 import { GridType, CellType } from "@/models/layout";
 
 interface GridProps {
-  grid: GridType;
-  selectedTool: CellType;
-  updateCell: (row: number, col: number, type: CellType) => void;
+  readonly grid: GridType;
+  readonly selectedTool: CellType | null;
+  readonly updateCell: (row: number, col: number, type: CellType, ...args: any[]) => void;
+  readonly clearCell?: (row: number, col: number) => void;
 }
 
 export default function Grid({
   grid,
   selectedTool,
   updateCell,
+  clearCell,
 }: GridProps) {
   const rows = grid.length;
   const cols = grid[0]?.length || 1;
 
+  const handleCellClick = (row: number, col: number) => {
+    updateCell(row, col);
+  };
+
+  const handleCellRightClick = (row: number, col: number) => {
+    if (clearCell) {
+      clearCell(row, col);
+    }
+  };
+
   return (
-    <div className="w-[500px] h-[500px] border bg-gray-200 overflow-hidden">
+    <div className="w-full flex-1 border border-gray-300 bg-gray-50 overflow-hidden rounded-lg">
       <div
-        className="grid w-full h-full gap-0.5"
+        className="grid w-full h-full gap-0.5 p-2"
         style={{
           gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
           gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
@@ -31,9 +43,8 @@ export default function Grid({
             <Cell
               key={`${rowIndex}-${colIndex}`}
               data={cell}
-              onClick={() =>
-                updateCell(rowIndex, colIndex, selectedTool)
-              }
+              onClick={() => handleCellClick(rowIndex, colIndex)}
+              onRightClick={() => handleCellRightClick(rowIndex, colIndex)}
             />
           ))
         )}

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/utils/withAuth";
 import { createSpot, getSpotsByOwner } from "@/services/spotService";
 import { getSensorBySpot } from "@/services/sensorService";
+import { db } from "@/lib/firebase";
 
 export const GET = withAuth(async (req: NextRequest) => {
   try {
@@ -9,7 +10,47 @@ export const GET = withAuth(async (req: NextRequest) => {
     const spotsWithSensor = await Promise.all(
       spots.map(async (spot) => {
         const sensor = await getSensorBySpot(spot.slotId);
-        return { ...spot, sensor };
+
+        // Get layout information if spot has layoutId
+        let layoutInfo = null;
+        if (spot.layoutId) {
+          try {
+            const layoutSnapshot = await db.ref(`layouts/${spot.layoutId}`).once('value');
+            const layout = layoutSnapshot.val();
+            if (layout) {
+              let gridRow = spot.rowNo ?? null;
+              let gridCol = spot.columnNo ?? null;
+
+              if ((gridRow === null || gridRow === "" || gridCol === null || gridCol === "") && layout.grid) {
+                for (let row = 0; row < layout.grid.length; row++) {
+                  for (let col = 0; col < layout.grid[row].length; col++) {
+                    const cell = layout.grid[row][col];
+                    if (cell?.type === "slot" && cell.spotId === spot.slotId) {
+                      gridRow = row + 1;
+                      gridCol = col + 1;
+                      break;
+                    }
+                  }
+                  if (gridRow !== null && gridCol !== null) break;
+                }
+              }
+
+              layoutInfo = {
+                layoutName: layout.layoutName || "Unnamed Layout",
+                gridRow,
+                gridCol,
+              };
+            }
+          } catch (error) {
+            console.error(`Error fetching layout ${spot.layoutId}:`, error);
+          }
+        }
+
+        return {
+          ...spot,
+          sensor,
+          layoutInfo,
+        };
       })
     );
     return NextResponse.json({ success: true, data: spotsWithSensor });
