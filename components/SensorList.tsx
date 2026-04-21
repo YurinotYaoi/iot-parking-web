@@ -75,15 +75,19 @@ export default function SensorList() {
   };
 
   return (
-    <div className="h-[770px] overflow-y-auto rounded  dark:text-slate-100 shadow-sm">
+    <div className="h-[770px] overflow-y-auto rounded  dark:text-slate-100">
       <EditSpotModal spot={selectedSpot} onClose={closeModal} onSaved={handleRefresh} />
 
-      <div className="flex items-center justify-between gap-2 border-b bg-slate-100 px-3 py-2 text-sm dark:bg-slate-800">
+      <div className="flex items-center justify-between gap-2 border-b 
+      bg-gray-100 px-3 py-2 text-sm 
+      dark:bg-gray-900">
         <span className="font-semibold">Parking slots</span>
         <span className="text-slate-500 dark:text-slate-400">Auto-refresh every 5s · last updated {lastUpdated || "—"}</span>
       </div>
 
-      <div className="grid grid-cols-7 border-b bg-slate-100 dark:bg-slate-800">
+      <div className="grid grid-cols-7 border-b 
+      bg-gray-100 
+      dark:bg-gray-900">
         <div className="p-3 font-semibold">Slot Name</div>
         <div className="p-3 text-center font-semibold">Layout Name</div>
         <div className="p-3 text-center font-semibold">Grid Column</div>
@@ -110,7 +114,9 @@ export default function SensorList() {
           }
 
           return (
-            <div key={spot.slotId} className="grid grid-cols-7 border-b hover:bg-slate-50 dark:hover:bg-slate-800">
+            <div key={spot.slotId} className="grid grid-cols-7 border-b 
+            hover:bg-gray-100 
+            dark:hover:bg-gray-900">
               <div className="p-3">{spot.slotName}</div>
               <div className="p-3 text-center">{spot.layoutInfo?.layoutName || "-"}</div>
               <div className="p-3 text-center">{spot.layoutInfo?.gridCol || "-"}</div>
@@ -118,7 +124,7 @@ export default function SensorList() {
               <div className="p-3 text-center">{statusDisplay}</div>
               <div className="p-3 text-center">{spot.sensor?.sensorId || "None"}</div>
               <div className="p-3 flex justify-center">
-                <Button className="w-full" onClick={() => setSelectedSpot(spot)}>
+                <Button className="w-full bg-gray-900 dark:bg-slate-100" onClick={() => setSelectedSpot(spot)}>
                   Edit
                 </Button>
               </div>

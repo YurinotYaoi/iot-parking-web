@@ -90,7 +90,7 @@ export default function LocationModal({ onClose, onSave, initialName = "", initi
         </div>
 
         <div className="mt-6 flex gap-3">
-          <Button className="flex-1" onClick={handleSave}>
+          <Button className="flex-1 bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white" onClick={handleSave}>
             Save Location
           </Button>
           <Button variant="outline" className="flex-1" onClick={onClose}>

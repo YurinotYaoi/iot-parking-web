@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebaseClient";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   onClose: () => void;
@@ -64,7 +65,7 @@ export default function CreateSensorModal({ onClose }: Props) {
       if (!user) throw new Error("Not logged in");
       const token = await user.getIdToken();
 
-      // 1️⃣ Create spot using the new route
+      // Create spot using the new route
       const createRes = await fetch("/api/spots", {
         method: "POST",
         headers: {
@@ -88,7 +89,7 @@ export default function CreateSensorModal({ onClose }: Props) {
 
       const spotId = slotData.data.id || slotData.data.slotId;
 
-      // 2️⃣ Assign sensor to the new spot
+      // Assign sensor to the new spot
       const assignRes = await fetch(`/api/sensors/${selectedSensor}`, {
         method: "PATCH",
         headers: {
@@ -105,7 +106,7 @@ export default function CreateSensorModal({ onClose }: Props) {
       const assignedSensor = await assignRes.json();
       if (!assignRes.ok) throw new Error(assignedSensor.message || "Failed to assign sensor");
 
-      // 3️⃣ Sync spot status to match sensor status
+      // Sync spot status to match sensor status
       const sensorStatus = assignedSensor.data?.status || 'online';
       const spotStatus = sensorStatus === 'offline' ? 'occupied' : 'available';
       
@@ -172,19 +173,12 @@ export default function CreateSensorModal({ onClose }: Props) {
         </select>
 
         <div className="flex justify-end gap-2">
-          <button
-            className="px-4 py-2 bg-gray-300 rounded"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-          <button
-            className="px-4 py-2 bg-blue-600 text-white rounded"
-            onClick={handleCreateAndAssign}
-            disabled={loading}
-          >
+          <Button className="bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white flex-1" onClick={handleCreateAndAssign} disabled={loading}>
             {loading ? "Saving..." : "Create & Assign"}
-          </button>
+          </Button>
+          <Button variant="outline" onClick={onClose} className="flex-1">
+            Cancel
+          </Button>
         </div>
       </div>
     </div>

@@ -30,7 +30,7 @@ const SignUpForm = () => {
       firstName,
       middleName,
       lastName,
-      secretKey: process.env.NEXT_PUBLIC_ADMIN_SECRET_KEY, // 🔥 AUTO SEND
+      secretKey: process.env.NEXT_PUBLIC_ADMIN_SECRET_KEY
     }),
   });
 

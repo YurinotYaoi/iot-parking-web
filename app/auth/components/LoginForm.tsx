@@ -26,13 +26,10 @@ const LoginForm = () => {
     e.preventDefault()
 
     try {
-      // 1️⃣ Login with Firebase
       const cred = await signInWithEmailAndPassword(auth, email, password);
 
-      // 2️⃣ Get Firebase ID Token
       const token = await cred.user.getIdToken();
 
-      // 3️⃣ Call your Next.js login API with token
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -46,11 +43,9 @@ const LoginForm = () => {
         return;
       }
 
-      // 4️⃣ Store token and user data in localStorage for authenticated requests
       // Note: data.data contains the actual user info because successResponse wraps it
       localStorage.setItem('flexpark_auth', JSON.stringify({ token, user: { ...data.data, password } }));
       
-      // 5️⃣ Redirect to dashboard
       router.push("/dashboard");
       
     } catch (err: unknown) {

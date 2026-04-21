@@ -236,7 +236,7 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
         </div>
 
         <div className="mt-6 flex flex-col gap-3">
-          <Button className="w-full" onClick={handleSave} disabled={saving}>
+          <Button className="w-full bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white" onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save changes"}
           </Button>
 

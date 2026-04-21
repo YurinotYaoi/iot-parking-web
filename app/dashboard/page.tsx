@@ -17,13 +17,13 @@ import LocationModal from "@/components/modals/LocationModal";
 export default function DashboardScreen() {
   const router = useRouter();
 
-  // ✅ Logout
+  // Logout
   const handleLogout = async () => {
     await signOut(auth);
     router.push("/");
   };
 
-  // ✅ User Fetch
+  // User Fetch
   const [user, setUser] = useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function DashboardScreen() {
     return () => unsub();
   }, []);
 
-  // ✅ MODAL FIX (IMPORTANT)
+  // MODAL FIX (IMPORTANT)
   const [showCSModal, setShowCSModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
 
@@ -76,7 +76,7 @@ export default function DashboardScreen() {
     <main className="flex flex-col w-full items-center justify-center">
       <div className="w-screen max-w-600 flex flex-rows h-213">
 
-        {/* ✅ Modal */}
+        {/* Modal */}
         {showCSModal && (
           <CreateSensorModal onClose={closeCSModal} />
         )}
@@ -91,7 +91,7 @@ export default function DashboardScreen() {
 
         {/* LEFT PANEL */}
         <div className="w-[30%] p-2">
-          <div className="h-full w-full border-2 border-gray-600 bg-white rounded-md p-1 dark:border-slate-700 dark:bg-slate-900">
+          <div className="h-full w-full border-2 border-gray-800 rounded-md p-1">
             <div className="p-10">
               {user ? 
                 <h1 className="text-center text-3xl">
@@ -104,7 +104,7 @@ export default function DashboardScreen() {
 
             <div className="text-2xl">
               <Button
-                className="w-full rounded-sm justify-start"
+                className="w-full rounded-sm justify-start bg-gray-900 dark:bg-slate-100"
                 onClick={openLocationModal}
               >
                 <FaMapLocationDot className="!size-5" /> | {user?.location?.name || "Location"}
@@ -130,14 +130,14 @@ export default function DashboardScreen() {
 
         {/* RIGHT PANEL */}
         <div className="w-[70%] p-2 flex flex-col">
-          <div className="h-fit w-full flex border-2 border-gray-600 rounded-md p-1 mb-1 justify-between">
+          <div className="h-fit w-full flex border-2 border-gray-800 rounded-md p-1 mb-1 justify-between">
             <div>
-              <Button className="rounded-sm mr-1" onClick={openCSModal}>
+              <Button className="rounded-sm mr-1 bg-gray-900 dark:bg-slate-100" onClick={openCSModal}>
                 Create Sensor
               </Button>
 
               <Button
-                className="rounded-sm"
+                className="rounded-sm bg-gray-900 dark:bg-slate-100"
                 onClick={() => router.push("/dashboard/layout")}
               >
                 Layouts
@@ -146,21 +146,21 @@ export default function DashboardScreen() {
 
             <div>
               <Button
-                className="rounded-sm mr-1"
+                className="rounded-sm mr-1 bg-gray-900 dark:bg-slate-100"
                 onClick={() => router.push("/dashboard/settings")}
               >
                 <IoSettings />
                 Settings
               </Button>
 
-              <Button className="rounded-sm" onClick={handleLogout}>
+              <Button className="rounded-sm bg-gray-900 dark:bg-slate-100" onClick={handleLogout}>
                 <IoLogOutOutline />
                 Logout
               </Button>
             </div>
           </div>
 
-          <div className="grow w-full border-2 border-gray-600 rounded-md p-1">
+          <div className="grow w-full border-2 border-gray-800 rounded-md">
             <SensorList />
           </div>
         </div>
