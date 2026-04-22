@@ -15,6 +15,10 @@ import CreateSensorModal from "@/components/modals/CreateSensorModal";
 import LocationModal from "@/components/modals/LocationModal";
 
 export default function DashboardScreen() {
+
+    useEffect(() => {
+    document.title = "Dashboard";
+  }, []);
   const router = useRouter();
 
   // Logout

@@ -1,6 +1,11 @@
+import type { Metadata } from "next"; 
 import Link from "next/link";
 
+export const metadata: Metadata = {
+  title: "FlexPark - Home",
+};
 export default function Home() {
+
   return (
     <div className="flex items-center justify-center">
       <main className="flex w-full max-w-6xl flex-col items-center justify-between py-32 px-16 sm:items-start">
@@ -10,7 +15,7 @@ export default function Home() {
             <span className="text-red-700">IoT</span> frontend
           </h1>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum, incidunt accusantium commodi harum perferendis totam iure iusto explicabo officiis nesciunt sequi animi similique illum dolorum quod esse atque quibusdam quaerat.
+           The brain of your smart parking lot. Track, manage, and scale your IoT infrastructure with FlexPark's intuitive real-time interface.
           </p>
           <div className="mt-4">
             <Link

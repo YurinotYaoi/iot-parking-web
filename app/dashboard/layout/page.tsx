@@ -4,9 +4,13 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa6";
 import LayoutList from "@/components/layout/LayoutList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function LayoutsScreen() {
+
+    useEffect(() => {
+    document.title = "Layouts";
+  }, []);
   const router = useRouter();
   const [refreshKey, setRefreshKey] = useState(0);
 

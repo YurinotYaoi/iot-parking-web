@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
 
+    useEffect(() => {
+    document.title = "Settings";
+  }, []);
+
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(true);
