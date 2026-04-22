@@ -1,7 +1,12 @@
-import React from "react";
+
 import LoginForm from "../components/LoginForm";
+import { useEffect, useState } from "react"; 
 
 export default function LoginScreen() {
+    useEffect(() => {
+    document.title = "Login";
+  }, []);
+
   return (
     <main className="flex flex-col w-full items-center justify-center py-32 px-16">
       <div className="p-5 rounded-2xl

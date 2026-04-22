@@ -1,7 +1,11 @@
 import React from "react";
 import SignUpForm from "../components/SignUpForm";
-
+import { useState, useEffect } from "react"; 
 export default function SignupScreen() {
+    useEffect(() => {
+    document.title = "Signup";
+  }, []);
+
   return (
     <main className="flex flex-col w-full items-center justify-center py-32 px-16">
       <div className="p-5 rounded-2xl

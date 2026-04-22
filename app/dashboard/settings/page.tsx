@@ -74,7 +74,7 @@ export default function SettingsPage() {
     fetchUser();
   }, [router]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     const authData = JSON.parse(localStorage.getItem('flexpark_auth') || '{}');

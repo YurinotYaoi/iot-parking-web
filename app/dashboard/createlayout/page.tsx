@@ -13,7 +13,7 @@ import { auth } from "@/lib/firebaseClient";
 
 export default function CreateLayoutPage() {
     useEffect(() => {
-    document.title = "Dashboard";
+    document.title = "Create Layout";
   }, []);
   const router = useRouter();
   const [rows, setRows] = useState(5);
