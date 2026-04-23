@@ -1,10 +1,11 @@
 import React from "react";
 import SignUpForm from "../components/SignUpForm";
-import { useState, useEffect } from "react"; 
+import type { Metadata } from "next"; 
+
+export const metadata: Metadata = {
+  title: "Signup | FlexPark",
+};
 export default function SignupScreen() {
-    useEffect(() => {
-    document.title = "Signup";
-  }, []);
 
   return (
     <main className="flex flex-col w-full items-center justify-center py-32 px-16">

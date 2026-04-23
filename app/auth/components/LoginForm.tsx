@@ -12,10 +12,6 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-    useEffect(() => {
-    document.title = "Login | FlexPark";
-  }, []);
-
   useEffect(() => {
   const unsub = onAuthStateChanged(auth, (user) => {
     if (user) {

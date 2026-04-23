@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect} from "react";
+import { useState} from "react";
 import { useRouter } from "next/navigation";
-
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -13,10 +12,6 @@ const SignUpForm = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const router = useRouter();
-
-    useEffect(() => {
-    document.title = "Sign Up | FlexPark";
-  }, []);
 
   const handleRegister = async () => {
   if (password !== confirmPassword) {

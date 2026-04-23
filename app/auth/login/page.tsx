@@ -1,11 +1,12 @@
 
 import LoginForm from "../components/LoginForm";
-import { useEffect, useState } from "react"; 
+import type { Metadata } from "next"; 
+
+export const metadata: Metadata = {
+  title: "Login | FlexPark",
+};
 
 export default function LoginScreen() {
-    useEffect(() => {
-    document.title = "Login";
-  }, []);
 
   return (
     <main className="flex flex-col w-full items-center justify-center py-32 px-16">
