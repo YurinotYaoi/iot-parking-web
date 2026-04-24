@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Grid from "@/components/layout/Grid";
 import Toolbar from "@/components/layout/Toolbar";
@@ -10,7 +10,11 @@ import { CellType, SpotData } from "@/models/layout";
 import { createLayout } from "@/services/layoutService";
 import { auth } from "@/lib/firebaseClient";
 
+
 export default function CreateLayoutPage() {
+    useEffect(() => {
+    document.title = "Create Layout";
+  }, []);
   const router = useRouter();
   const [rows, setRows] = useState(5);
   const [cols, setCols] = useState(8);

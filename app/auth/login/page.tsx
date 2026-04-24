@@ -1,7 +1,13 @@
-import React from "react";
+
 import LoginForm from "../components/LoginForm";
+import type { Metadata } from "next"; 
+
+export const metadata: Metadata = {
+  title: "Login | FlexPark",
+};
 
 export default function LoginScreen() {
+
   return (
     <main className="flex flex-col w-full items-center justify-center py-32 px-16">
       <div className="p-5 rounded-2xl

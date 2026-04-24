@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
 
+    useEffect(() => {
+    document.title = "Settings";
+  }, []);
+
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -70,7 +74,7 @@ export default function SettingsPage() {
     fetchUser();
   }, [router]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     const authData = JSON.parse(localStorage.getItem('flexpark_auth') || '{}');

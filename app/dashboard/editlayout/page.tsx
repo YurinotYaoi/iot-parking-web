@@ -11,6 +11,9 @@ import { getLayoutById, updateLayout } from "@/services/layoutService";
 import { auth } from "@/lib/firebaseClient";
 
 export default function EditLayoutPage() {
+    useEffect(() => {
+    document.title = "Edit Layout";
+  }, []);
   const router = useRouter();
   const searchParams = useSearchParams();
   const layoutId = searchParams.get("id");

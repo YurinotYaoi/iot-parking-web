@@ -1,7 +1,12 @@
 import React from "react";
 import SignUpForm from "../components/SignUpForm";
+import type { Metadata } from "next"; 
 
+export const metadata: Metadata = {
+  title: "Signup | FlexPark",
+};
 export default function SignupScreen() {
+
   return (
     <main className="flex flex-col w-full items-center justify-center py-32 px-16">
       <div className="p-5 rounded-2xl
