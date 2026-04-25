@@ -36,6 +36,7 @@ export interface LayoutData {
   grid: GridType;
   lotId?: string;
   floor?: string;
+  ownerId?: string;
   createdAt?: number;
   updatedAt?: number;
 }

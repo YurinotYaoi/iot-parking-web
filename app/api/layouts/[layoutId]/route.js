@@ -28,8 +28,12 @@ export const PATCH = withAuth(async (req, { params }) => {
     if (!layout) return errorResponse('Layout not found', 404);
 
     const lot = await getParkingLotById(layout.lotId);
-    if (lot.adminUid !== req.user.uid) {
-      return errorResponse('Forbidden — you do not own this lot', 403);
+    // Check if user is the owner OR the lot admin
+    const isOwner = layout.ownerId === req.user.uid;
+    const isLotAdmin = lot.adminUid === req.user.uid;
+    
+    if (!isOwner && !isLotAdmin) {
+      return errorResponse('Forbidden — you do not own this layout or lot', 403);
     }
     const body = await req.json();
     const updated = await updateLayout(layoutId, body);
@@ -46,8 +50,12 @@ export const DELETE = withAuth(async (req, { params }) => {
     if (!layout) return errorResponse('Layout not found', 404);
 
     const lot = await getParkingLotById(layout.lotId);
-    if (lot.adminUid !== req.user.uid) {
-      return errorResponse('Forbidden — you do not own this lot', 403);
+    // Check if user is the owner OR the lot admin
+    const isOwner = layout.ownerId === req.user.uid;
+    const isLotAdmin = lot.adminUid === req.user.uid;
+    
+    if (!isOwner && !isLotAdmin) {
+      return errorResponse('Forbidden — you do not own this layout or lot', 403);
     }
     const result = await deleteLayout(layoutId);
     return successResponse(result);
