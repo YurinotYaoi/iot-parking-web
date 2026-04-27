@@ -86,6 +86,10 @@ const getLayoutsHandler = withAuth(async (req) => {
       if (!layout) {
         return NextResponse.json({ error: 'Layout not found' }, { status: 404 });
       }
+      // Check ownership: user must be the owner
+      if (layout.ownerId !== req.user.uid) {
+        return NextResponse.json({ error: 'Forbidden — you do not own this layout' }, { status: 403 });
+      }
       return NextResponse.json({ data: { layoutId, ...layout } });
     }
 
@@ -99,10 +103,12 @@ const getLayoutsHandler = withAuth(async (req) => {
       if (!data) {
         return NextResponse.json({ data: [] });
       }
-      const layouts = Object.entries(data).map(([id, layout]) => ({
-        layoutId: id,
-        ...layout,
-      }));
+      const layouts = Object.entries(data)
+        .filter(([id, layout]) => layout.ownerId === req.user.uid)
+        .map(([id, layout]) => ({
+          layoutId: id,
+          ...layout,
+        }));
       return NextResponse.json({ data: layouts });
     }
 
@@ -131,6 +137,7 @@ const createLayoutHandler = withAuth(async (req) => {
       totalRows: rows || 0,
       totalColumns: cols || 0,
       grid: grid || [],
+      ownerId: req.user.uid,
       isActive: true,
       createdAt: Date.now(),
       updatedAt: Date.now(),

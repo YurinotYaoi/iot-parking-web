@@ -1,41 +1,25 @@
-import admin from 'firebase-admin';
-import { db } from '@/lib/firebase';
-
-
-export const registerUser = async (data) => {
-  const { email, password, firstName, middleName, lastName, role } = data;
-
-  const userRecord = await adminAuth.createUser({
-    email,
-    password,
-    displayName,
-  });
-
-  await db.collection("users").doc(userRecord.uid).set({
-    uid: userRecord.uid,
-    email,
-    firstName,
-    middleName,
-    lastName,
-    role: role || "user", // fallback
-    createdAt: new Date(),
-  });
-
-  return userRecord;
-};
-
-export async function getUserByUid(uid) {
-  const snapshot = await db.ref(`users/${uid}`).once('value');
-  return snapshot.val();
-}
+import { auth as adminAuth, db } from '@/lib/firebase';
 
 export async function verifyToken(token) {
   try {
-    const decoded = await admin.auth().verifyIdToken(token);
-    console.log("Decoded token:", decoded);
+    const decoded = await adminAuth.verifyIdToken(token);
     return decoded;
   } catch (err) {
-    console.error("Token verification failed:", err.message);
+    console.error('Token verification failed:', err.message);
+    throw new Error('Invalid or expired token');
+  }
+}
+
+export async function getUserByUid(uid) {
+  try {
+    const snapshot = await db.ref(`users/${uid}`).once('value');
+    const userData = snapshot.val();
+    if (!userData) {
+      throw new Error('User not found');
+    }
+    return userData;
+  } catch (err) {
+    console.error('Failed to fetch user:', err.message);
     throw err;
   }
 }
