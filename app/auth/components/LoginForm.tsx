@@ -6,10 +6,12 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useEffect } from "react";
 import { auth } from "@/lib/firebaseClient";
 import { onAuthStateChanged } from "firebase/auth";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -81,13 +83,23 @@ const LoginForm = () => {
       .dark:text-zinc-50">
         Password
       </label>
-      <input
-        type="password"
-        id="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className=".dark:text-zinc-50"
-      />
+      <div className="relative">
+        <input
+          type={showPassword ? "text" : "password"}
+          id="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className=".dark:text-zinc-50 pr-10 w-full"
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+          aria-label={showPassword ? "Hide password" : "Show password"}
+        >
+          {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+        </button>
+      </div>
 
       <button
         type="submit"

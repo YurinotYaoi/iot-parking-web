@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function SettingsPage() {
 
@@ -13,6 +14,9 @@ export default function SettingsPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState({ firstName: '', lastName: '', middleName: '', email: '', password: '' });
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     // First, try to get user data from localStorage and set it immediately
@@ -23,7 +27,7 @@ export default function SettingsPage() {
         lastName: authData.user.lastName || '',
         middleName: authData.user.middleName || '',
         email: authData.user.email || '',
-        password: authData.user.password || ''
+        password: ''
       });
     }
 
@@ -57,7 +61,7 @@ export default function SettingsPage() {
             lastName: data.lastName || prev.lastName, 
             middleName: data.middleName || prev.middleName, 
             email: data.email || prev.email, 
-            password: prev.password // Keep existing password
+            password: ''
           }));
         } else if (response.status === 401) {
           console.error('Unauthorized - redirecting to login');
@@ -76,6 +80,22 @@ export default function SettingsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if password fields are filled
+    const passwordChanged = user.password.trim() !== '';
+    
+    if (passwordChanged) {
+      // Validate passwords match
+      if (user.password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+      if (user.password.length < 6) {
+        alert('Password must be at least 6 characters');
+        return;
+      }
+    }
+    
     setIsLoading(true);
     const authData = JSON.parse(localStorage.getItem('flexpark_auth') || '{}');
     const token = authData.token;
@@ -87,30 +107,68 @@ export default function SettingsPage() {
       return;
     }
 
-    const response = await fetch(`/api/users/${uid}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        middleName: user.middleName,
-        email: user.email,
-        password: user.password,
-      }),
-    });
-    const data = await response.json();
-    if (response.ok && data.success) {
-      // Update localStorage with new user data including password
-      localStorage.setItem('flexpark_auth', JSON.stringify({ token, user: { ...data.data, password: user.password } }));
+    try {
+      // Update profile (first name, last name, middle name, email)
+      const response = await fetch(`/api/users/${uid}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          middleName: user.middleName,
+          email: user.email,
+        }),
+      });
+      const data = await response.json();
+      
+      if (!response.ok || !data.success) {
+        alert(data.error || 'Failed to update profile');
+        setIsLoading(false);
+        return;
+      }
+
+      // If password changed, update it separately
+      if (passwordChanged) {
+        const passwordResponse = await fetch('/api/auth/change-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            uid,
+            newPassword: user.password,
+          }),
+        });
+        const passwordData = await passwordResponse.json();
+        
+        if (!passwordResponse.ok || !passwordData.success) {
+          alert('Profile updated but password change failed: ' + (passwordData.error || 'Unknown error'));
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Update localStorage with new user data
+      localStorage.setItem('flexpark_auth', JSON.stringify({ 
+        token, 
+        user: { ...authData.user, ...data.data } 
+      }));
+      
       alert('Profile updated successfully');
+      // Reset password fields
+      setUser(prev => ({ ...prev, password: '' }));
+      setConfirmPassword('');
       router.push('/dashboard');
-    } else {
-      alert(data.error || 'Failed to update profile');
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      alert('An error occurred while updating profile');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -177,20 +235,59 @@ export default function SettingsPage() {
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              placeholder={user.password || "Password"}
-              value={user.password}
-              onChange={(e) => setUser({ ...user, password: e.target.value })}
-            />
+            <div className="relative mt-1">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                id="password"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm pr-10"
+                placeholder="Leave empty to keep current password"
+                value={user.password}
+                onChange={(e) => setUser({ ...user, password: e.target.value })}
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              </button>
+            </div>
+          </div>
+          <div className="mb-4">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              Confirm Password
+            </label>
+            <div className="relative mt-1">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                id="confirmPassword"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm pr-10"
+                placeholder="Leave empty to keep current password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                disabled={isLoading}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50"
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                {showConfirmPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              </button>
+            </div>
           </div>
           <div className="flex items-center justify-end">
             <button
               type="submit"
               className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              disabled={isLoading}
             >
               Save
             </button>
@@ -198,6 +295,7 @@ export default function SettingsPage() {
               type="button"
               className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-white py-2 px-4 text-sm font-medium text-indigo-600 shadow-sm hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               onClick={() => router.push('/dashboard')}
+              disabled={isLoading}
             >
               Cancel
             </button>
