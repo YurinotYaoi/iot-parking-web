@@ -1,5 +1,14 @@
+// ============================================================
+// ROUTE: /api/parking-lots/[lotId]/layouts
+// GET  — list all layouts for a lot   (any authenticated user)
+// POST — create a layout for a lot    (admin only, must own the lot)
+//
+// FIX: Was calling layoutService.js (client-side, uses auth.currentUser)
+//      from a server route. Now uses layoutServiceServer.js (Firebase Admin)
+// ============================================================
+
 import { withAuth } from '@/utils/withAuth';
-import { getLayoutsByLot, createLayout } from '@/services/layoutService';
+import { getLayoutsByLot, createLayout } from '@/services/layoutServiceServer';
 import { getParkingLotById } from '@/services/parkingLotService';
 import { validateRequiredFields } from '@/utils/validate';
 import { successResponse, errorResponse } from '@/utils/response';
@@ -28,7 +37,7 @@ export const POST = withAuth(async (req, { params }) => {
     const missing = validateRequiredFields(body, ['layoutName']);
     if (missing) return errorResponse(missing, 400);
 
-    const layout = await createLayout(lotId, body);
+    const layout = await createLayout(lotId, body, req.user.uid);
     return successResponse(layout, 201);
   } catch (err) {
     return errorResponse(err.message, 500);
