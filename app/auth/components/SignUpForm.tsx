@@ -4,7 +4,6 @@ import { useState} from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebaseClient";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -14,8 +13,6 @@ const SignUpForm = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const router = useRouter();
 
@@ -110,46 +107,22 @@ const SignUpForm = () => {
       <label htmlFor="password" className="">
         Password
       </label>
-      <div className="relative">
-        <input
-          type={showPassword ? "text" : "password"}
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={loading}
-          className="pr-10 w-full"
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          disabled={loading}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50"
-          aria-label={showPassword ? "Hide password" : "Show password"}
-        >
-          {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-        </button>
-      </div>
+      <input
+        type="password"
+        id="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        disabled={loading}
+      />
 
       <label htmlFor="confirmPassword">Confirm Password</label>
-      <div className="relative">
-        <input
-          type={showConfirmPassword ? "text" : "password"}
-          id="confirmPassword"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          disabled={loading}
-          className="pr-10 w-full"
-        />
-        <button
-          type="button"
-          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-          disabled={loading}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50"
-          aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-        >
-          {showConfirmPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-        </button>
-      </div>
+      <input
+        type="password"
+        id="confirmPassword"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        disabled={loading}
+      />
 
       <button
         type="button"
