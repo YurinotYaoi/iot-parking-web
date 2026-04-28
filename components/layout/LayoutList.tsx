@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getLayoutsByLot } from "@/services/layoutService";
 import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
 
 interface Layout {
   layoutId: string;
@@ -24,6 +25,7 @@ export default function LayoutList({ lotId = "default-lot-id", onRefresh }: Prop
   const [layouts, setLayouts] = useState<Layout[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchLayouts = async () => {
@@ -32,6 +34,7 @@ export default function LayoutList({ lotId = "default-lot-id", onRefresh }: Prop
     try {
       const data = await getLayoutsByLot(lotId);
       setLayouts(data);
+      setLastUpdated(new Date().toLocaleTimeString());
     } catch (err) {
       console.error("Error fetching layouts:", err);
       setError(err instanceof Error ? err.message : "Failed to fetch layouts");
@@ -42,6 +45,8 @@ export default function LayoutList({ lotId = "default-lot-id", onRefresh }: Prop
 
   useEffect(() => {
     fetchLayouts();
+    const interval = setInterval(() => fetchLayouts(), 5000);
+    return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lotId]);
 
@@ -69,73 +74,69 @@ export default function LayoutList({ lotId = "default-lot-id", onRefresh }: Prop
   };
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Layouts</h2>
-        <button
-          onClick={fetchLayouts}
-          disabled={loading}
-          className="text-sm px-3 py-2 border rounded hover:bg-gray-100 disabled:opacity-50"
-        >
-          {loading ? "Loading..." : "Refresh"}
-        </button>
+    <div className="max-h-[770px] overflow-y-auto rounded dark:text-slate-100">
+      <div className="flex items-center justify-between gap-2 border-b 
+      bg-gray-100 px-3 py-2 text-sm 
+      dark:bg-gray-900">
+        <span className="font-semibold">Layouts</span>
+        <span className="text-slate-500 dark:text-slate-400">
+          {error ? (
+            <span className="text-red-600 dark:text-red-400">{error}</span>
+          ) : (
+            `Last updated ${lastUpdated || "—"}`
+          )}
+        </span>
       </div>
 
-      {error && <div className="text-red-600 text-sm mb-4">{error}</div>}
+      <div className="grid grid-cols-5 border-b 
+      bg-gray-100 
+      dark:bg-gray-900">
+        <div className="p-3 font-semibold">Name</div>
+        <div className="p-3 text-center font-semibold">Size</div>
+        <div className="p-3 text-center font-semibold">Notes</div>
+        <div className="p-3 text-center font-semibold">Created</div>
+        <div className="p-3 text-center font-semibold">Actions</div>
+      </div>
 
-      {loading && <div className="text-gray-500">Loading layouts...</div>}
+      {loading && (
+        <div className="p-4 text-center">Loading layouts...</div>
+      )}
 
       {!loading && layouts.length === 0 && (
-        <div className="text-gray-500 text-center py-8">No layouts found</div>
+        <div className="p-4 text-center text-slate-500 dark:text-slate-400">No layouts found</div>
       )}
 
-      {!loading && layouts.length > 0 && (
-        <div className="border rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-100 border-b">
-                <tr>
-                  <th className="px-4 py-3 text-left font-semibold">Name</th>
-                  <th className="px-4 py-3 text-left font-semibold">Size</th>
-                  <th className="px-4 py-3 text-left font-semibold">Notes</th>
-                  <th className="px-4 py-3 text-left font-semibold">Created</th>
-                  <th className="px-4 py-3 text-center font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {layouts.map((layout) => (
-                  <tr key={layout.layoutId} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium">{layout.layoutName}</td>
-                    <td className="px-4 py-3 text-sm">
-                      {layout.totalRows} × {layout.totalColumns}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {getTruncatedNotes(layout.notes)}
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      {new Date(layout.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => handleEdit(layout.layoutId)}
-                        className="mx-1 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(layout.layoutId)}
-                        className="mx-1 px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {!loading && layouts.length > 0 &&
+        layouts.map((layout) => (
+          <div key={layout.layoutId} className="grid grid-cols-5 border-b 
+          hover:bg-gray-100 
+          dark:hover:bg-gray-900">
+            <div className="p-3">{layout.layoutName}</div>
+            <div className="p-3 text-center text-sm">
+              {layout.totalRows} × {layout.totalColumns}
+            </div>
+            <div className="p-3 text-center text-sm text-slate-600 dark:text-slate-400">
+              {getTruncatedNotes(layout.notes)}
+            </div>
+            <div className="p-3 text-center text-sm">
+              {new Date(layout.createdAt).toLocaleDateString()}
+            </div>
+            <div className="p-3 flex justify-center gap-2">
+              <Button
+                onClick={() => handleEdit(layout.layoutId)}
+                className="shadow-md active:shadow-inner active:translate-y-px grow bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-white"
+              >
+                Edit
+              </Button>
+              <Button
+                onClick={() => handleDelete(layout.layoutId)}
+                className="shadow-md active:shadow-inner active:translate-y-px grow bg-red-600 text-white hover:bg-white hover:text-red-600 hover:border-red-600 border border-transparent dark:bg-red-700 dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-white"
+              >
+                Delete
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        ))}
     </div>
   );
 }

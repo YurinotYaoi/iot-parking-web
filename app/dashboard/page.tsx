@@ -5,7 +5,7 @@ import { signOut, onAuthStateChanged, type User as FirebaseUser } from "firebase
 import { auth } from "@/lib/firebaseClient";
 import { useRouter } from "next/navigation";
 import { IoLogOutOutline , IoSettings } from "react-icons/io5";
-import { FaMapLocationDot } from "react-icons/fa6";
+import { FaMapLocationDot , FaTableList } from "react-icons/fa6";
 import { getUser } from "@/services/user";
 import { useEffect, useState } from "react";
 import type { UserProfile } from "@/models/user";
@@ -108,7 +108,7 @@ export default function DashboardScreen() {
 
             <div className="text-2xl">
               <Button
-                className="w-full rounded-sm justify-start bg-gray-900 dark:bg-slate-100"
+                className="shadow-md active:shadow-inner active:translate-y-px w-full rounded-sm justify-start bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 "
                 onClick={openLocationModal}
               >
                 <FaMapLocationDot className="!size-5" /> | {user?.location?.name || "Location"}
@@ -136,28 +136,29 @@ export default function DashboardScreen() {
         <div className="w-[70%] p-2 flex flex-col">
           <div className="h-fit w-full flex border-2 border-gray-800 rounded-md p-1 mb-1 justify-between">
             <div>
-              <Button className="rounded-sm mr-1 bg-gray-900 dark:bg-slate-100" onClick={openCSModal}>
-                Create Sensor
+              <Button className="shadow-md active:shadow-inner active:translate-y-px rounded-sm mr-1 bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 " onClick={openCSModal}>
+                Create Sensor +
               </Button>
 
               <Button
-                className="rounded-sm bg-gray-900 dark:bg-slate-100"
+                className="shadow-md active:shadow-inner active:translate-y-px rounded-sm bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 "
                 onClick={() => router.push("/dashboard/layout")}
               >
-                Layouts
+                Layouts 
+                <FaTableList />
               </Button>
             </div>
 
             <div>
               <Button
-                className="rounded-sm mr-1 bg-gray-900 dark:bg-slate-100"
+                className="shadow-md active:shadow-inner active:translate-y-px rounded-sm mr-1 bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 "
                 onClick={() => router.push("/dashboard/settings")}
               >
                 <IoSettings />
                 Settings
               </Button>
 
-              <Button className="rounded-sm bg-gray-900 dark:bg-slate-100" onClick={handleLogout}>
+              <Button className="shadow-md active:shadow-inner active:translate-y-px rounded-sm bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 " onClick={handleLogout}>
                 <IoLogOutOutline />
                 Logout
               </Button>

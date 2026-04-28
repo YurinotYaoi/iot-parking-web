@@ -72,6 +72,7 @@ export default function Cell({ data, liveStatus, onClick, onRightClick }: Props)
         p-1
         text-xs
         border-0
+        rounded
         ${getColor(data.type, liveStatus)}
       `}
       aria-label={`Cell: ${data.type}`}

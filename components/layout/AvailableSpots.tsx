@@ -66,27 +66,27 @@ export default function AvailableSpots({ placedSpotIds, onSelectSpot, currentLay
   );
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 dark:text-slate-100">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold">Available Spots</h3>
+        <h3 className="font-semibold dark:text-slate-100">Available Spots</h3>
         <button
           onClick={fetchSpots}
           disabled={loading}
-          className="text-xs px-2 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
+          className="text-xs px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 dark:text-slate-300 dark:border-slate-600"
         >
           {loading ? "Loading..." : "Refresh"}
         </button>
       </div>
 
-      {error && <div className="text-red-600 text-sm">{error}</div>}
+      {error && <div className="text-red-600 dark:text-red-400 text-sm">{error}</div>}
 
-      <div className="max-h-96 overflow-y-auto border rounded bg-white">
+      <div className="max-h-43 overflow-y-auto border rounded bg-white dark:bg-slate-800 dark:border-slate-700">
         {loading && (
-          <div className="p-4 text-center text-gray-500">Loading spots...</div>
+          <div className="p-4 text-center text-gray-500 dark:text-slate-400">Loading spots...</div>
         )}
 
         {!loading && availableSpots.length === 0 && (
-          <div className="p-4 text-center text-gray-500">
+          <div className="p-4 text-center text-gray-500 dark:text-slate-400">
             {spots.length === 0 ? "No spots available" : "All spots placed or all remaining spots are assigned"}
           </div>
         )}
@@ -106,7 +106,7 @@ export default function AvailableSpots({ placedSpotIds, onSelectSpot, currentLay
                 className="w-full text-left p-3 border-b cursor-pointer hover:bg-blue-50 transition-colors"
               >
                 <div className="font-semibold text-sm">{spot.slotName}</div>
-                <div className="text-xs text-gray-600">
+                <div className="text-xs text-gray-600 dark:text-slate-400">
                   Floor: {spot.floor} | Row: {spot.rowNo} | Col: {spot.columnNo}
                 </div>
                 <div className="text-xs mt-1">
@@ -121,7 +121,7 @@ export default function AvailableSpots({ placedSpotIds, onSelectSpot, currentLay
           })}
 
         {usedSpots.length > 0 && (
-          <div className="p-3 text-xs text-gray-500 border-t">
+          <div className="p-3 text-xs text-gray-500 dark:text-slate-400 border-t dark:border-slate-700">
             These spots are already assigned to another layout.
           </div>
         )}
@@ -131,13 +131,13 @@ export default function AvailableSpots({ placedSpotIds, onSelectSpot, currentLay
             return (
               <div
                 key={spot.slotId}
-                className="w-full text-left p-3 border-b bg-gray-100 opacity-70"
+                className="w-full text-left p-3 border-b bg-gray-100 dark:bg-slate-700 opacity-70 dark:text-slate-300 dark:border-slate-700"
               >
                 <div className="font-semibold text-sm">{spot.slotName}</div>
-                <div className="text-xs text-gray-600">
+                <div className="text-xs text-gray-600 dark:text-slate-400">
                   Used on {spot.layoutInfo?.layoutName || spot.layoutId}
                 </div>
-                <div className="text-xs mt-1 text-gray-500">
+                <div className="text-xs mt-1 text-gray-500 dark:text-slate-400">
                   {spot.status}
                 </div>
               </div>

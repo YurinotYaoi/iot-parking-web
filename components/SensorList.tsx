@@ -75,7 +75,7 @@ export default function SensorList() {
   };
 
   return (
-    <div className="h-[770px] overflow-y-auto rounded  dark:text-slate-100">
+    <div className="max-h-[770px] overflow-y-auto rounded dark:text-slate-100">
       <EditSpotModal spot={selectedSpot} onClose={closeModal} onSaved={handleRefresh} />
 
       <div className="flex items-center justify-between gap-2 border-b 
@@ -124,7 +124,7 @@ export default function SensorList() {
               <div className="p-3 text-center">{statusDisplay}</div>
               <div className="p-3 text-center">{spot.sensor?.sensorId || "None"}</div>
               <div className="p-3 flex justify-center">
-                <Button className="w-full bg-gray-900 dark:bg-slate-100" onClick={() => setSelectedSpot(spot)}>
+                <Button className="shadow-md active:shadow-inner active:translate-y-px w-full bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-white" onClick={() => setSelectedSpot(spot)}>
                   Edit
                 </Button>
               </div>
