@@ -54,7 +54,6 @@ export const Toast = ({ message, type, onClose, duration = 4000 }: ToastProps) =
         visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
       }`}
     >
-      {icon}
       <span className="flex-1">{message}</span>
       <button
         onClick={() => {
