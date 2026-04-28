@@ -9,6 +9,7 @@ import { useGrid } from "@/hooks/useGrid";
 import { CellType, SpotData, GridType } from "@/models/layout";
 import { getLayoutById, updateLayout } from "@/services/layoutService";
 import { auth } from "@/lib/firebaseClient";
+import { useSensorMap } from "@/hooks/useSensorMap";
 
 export default function EditLayoutPage() {
     useEffect(() => {
@@ -35,6 +36,7 @@ export default function EditLayoutPage() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { sensorMap } = useSensorMap();
 
   const placedSpots = getPlacedSpots();
 
@@ -208,6 +210,7 @@ export default function EditLayoutPage() {
             selectedTool={selectedTool}
             updateCell={(row, col) => handleGridCellClick(row, col)}
             clearCell={clearCell}
+            sensorMap={sensorMap}
           />
 
           <div className="text-sm text-gray-600">

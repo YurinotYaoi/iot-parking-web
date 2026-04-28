@@ -2,12 +2,14 @@
 
 import Cell from "./Cell";
 import { GridType, CellType } from "@/models/layout";
+import type { SensorMap } from "@/hooks/useSensorMap";
 
 interface GridProps {
   readonly grid: GridType;
   readonly selectedTool: CellType | null;
-  readonly updateCell: (row: number, col: number, type: CellType, ...args: any[]) => void;
+  readonly updateCell: (row: number, col: number) => void;
   readonly clearCell?: (row: number, col: number) => void;
+  readonly sensorMap?: SensorMap;
 }
 
 export default function Grid({
@@ -15,6 +17,7 @@ export default function Grid({
   selectedTool,
   updateCell,
   clearCell,
+  sensorMap,
 }: GridProps) {
   const rows = grid.length;
   const cols = grid[0]?.length || 1;
@@ -39,14 +42,21 @@ export default function Grid({
         }}
       >
         {grid.flatMap((row, rowIndex) =>
-          row.map((cell, colIndex) => (
-            <Cell
-              key={`${rowIndex}-${colIndex}`}
-              data={cell}
-              onClick={() => handleCellClick(rowIndex, colIndex)}
-              onRightClick={() => handleCellRightClick(rowIndex, colIndex)}
-            />
-          ))
+          row.map((cell, colIndex) => {
+            const liveStatus =
+              cell.type === "slot" && cell.spotId
+                ? sensorMap?.[cell.spotId]?.status
+                : undefined;
+            return (
+              <Cell
+                key={`${rowIndex}-${colIndex}`}
+                data={cell}
+                liveStatus={liveStatus}
+                onClick={() => handleCellClick(rowIndex, colIndex)}
+                onRightClick={() => handleCellRightClick(rowIndex, colIndex)}
+              />
+            );
+          })
         )}
       </div>
     </div>

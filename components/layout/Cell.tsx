@@ -4,16 +4,22 @@ import { CellData } from "@/models/layout";
 
 interface Props {
   readonly data: CellData;
+  readonly liveStatus?: string;
   readonly onClick: () => void;
   readonly onRightClick?: (e: React.MouseEvent) => void;
 }
 
-const getCellContent = (type: string, spotData?: any) => {
+const getCellContent = (
+  type: string,
+  spotData: CellData["spotData"],
+  liveStatus: string | undefined
+) => {
   if (type === "slot" && spotData) {
+    const display = liveStatus ?? "—";
     return (
       <>
         <div className="font-bold text-white">{spotData.slotName}</div>
-        <div className="text-white text-[10px]">{spotData.status}</div>
+        <div className="text-white text-[10px]">{display}</div>
       </>
     );
   }
@@ -23,18 +29,17 @@ const getCellContent = (type: string, spotData?: any) => {
   return <div className="text-gray-500 text-xs">empty</div>;
 };
 
-const getColor = (type: string) => {
-  switch (type) {
-    case "road":
-      return "bg-gray-500 hover:bg-gray-600";
-    case "slot":
-      return "bg-blue-500 hover:bg-blue-600";
-    default:
-      return "bg-green-100 hover:bg-green-200";
+const getColor = (type: string, liveStatus: string | undefined) => {
+  if (type === "road") return "bg-gray-500 hover:bg-gray-600";
+  if (type === "slot") {
+    if (liveStatus === "free") return "bg-green-500 hover:bg-green-600";
+    if (liveStatus === "occupied") return "bg-red-500 hover:bg-red-600";
+    return "bg-blue-500 hover:bg-blue-600";
   }
+  return "bg-green-100 hover:bg-green-200";
 };
 
-export default function Cell({ data, onClick, onRightClick }: Props) {
+export default function Cell({ data, liveStatus, onClick, onRightClick }: Props) {
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     onRightClick?.(e);
@@ -53,25 +58,25 @@ export default function Cell({ data, onClick, onRightClick }: Props) {
       onContextMenu={handleContextMenu}
       onKeyDown={handleKeyDown}
       className={`
-        w-full 
-        h-full 
-        min-w-0 
-        min-h-0 
-        flex 
+        w-full
+        h-full
+        min-w-0
+        min-h-0
+        flex
         flex-col
-        items-center 
-        justify-center 
-        cursor-pointer 
+        items-center
+        justify-center
+        cursor-pointer
         transition-colors
         text-center
         p-1
         text-xs
         border-0
-        ${getColor(data.type)}
+        ${getColor(data.type, liveStatus)}
       `}
       aria-label={`Cell: ${data.type}`}
     >
-      {getCellContent(data.type, data.spotData)}
+      {getCellContent(data.type, data.spotData, liveStatus)}
     </button>
   );
 }
