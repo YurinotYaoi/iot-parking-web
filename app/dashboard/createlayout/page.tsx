@@ -11,6 +11,7 @@ import { createLayout } from "@/services/layoutService";
 import { auth } from "@/lib/firebaseClient";
 import { useSensorMap } from "@/hooks/useSensorMap";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner"
 
 
 export default function CreateLayoutPage() {
@@ -54,7 +55,7 @@ export default function CreateLayoutPage() {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      setError("Layout name is required");
+      toast.error("Layout Name is Required")
       return;
     }
 
