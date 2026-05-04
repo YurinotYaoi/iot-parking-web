@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebaseClient";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type Props = {
   onClose: () => void;
@@ -54,7 +55,7 @@ export default function CreateSensorModal({ onClose }: Props) {
 
   const handleCreateAndAssign = async () => {
     if (!slotName || !vehicleType || !selectedSensor) {
-      alert("Fill all fields and select a sensor");
+      toast.error("Fill all fields and select a sensor");
       return;
     }
 
@@ -124,10 +125,10 @@ export default function CreateSensorModal({ onClose }: Props) {
       const updatedSpot = await updateSpotRes.json();
       if (!updateSpotRes.ok) throw new Error(updatedSpot.message || "Failed to update spot status");
 
-      alert("Slot created & sensor assigned!");
+      toast.success("Slot created & sensor assigned!");
       onClose();
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }

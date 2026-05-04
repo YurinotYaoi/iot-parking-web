@@ -9,6 +9,7 @@ import { FaMapLocationDot , FaTableList } from "react-icons/fa6";
 import { getUser } from "@/services/user";
 import { useEffect, useState } from "react";
 import type { UserProfile } from "@/models/user";
+import { toast } from "sonner";
 
 import SensorList from "@/components/SensorList";
 import CreateSensorModal from "@/components/modals/CreateSensorModal";
@@ -24,6 +25,7 @@ export default function DashboardScreen() {
   // Logout
   const handleLogout = async () => {
     await signOut(auth);
+    toast.success("Signed out successfully");
     router.push("/");
   };
 
@@ -71,8 +73,9 @@ export default function DashboardScreen() {
         const data = await getUser(auth.currentUser.uid);
         setUser(data);
       }
-    } catch (err) {
-      console.error('Failed to save location:', err);
+      toast.success("Location saved!");
+    } catch {
+      toast.error("Failed to save location");
     }
   };
 

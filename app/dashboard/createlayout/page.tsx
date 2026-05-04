@@ -83,7 +83,7 @@ export default function CreateLayoutPage() {
       await createLayout(lotId, layoutData);
 
       // Show success message
-      alert("Layout created successfully!");
+      toast.success("Layout created successfully!");
       
       // Redirect to layout list
       router.push("/dashboard/layout");
@@ -96,9 +96,10 @@ export default function CreateLayoutPage() {
   };
 
   const handleCancel = () => {
-    if (confirm("Are you sure you want to cancel? Any unsaved changes will be lost.")) {
-      router.push("/dashboard/layout");
-    }
+    toast("Unsaved changes will be lost.", {
+      action: { label: "Leave anyway", onClick: () => router.push("/dashboard/layout") },
+      cancel: { label: "Stay", onClick: () => {} },
+    });
   };
 
   const handleGridClick = (rowIndex: number, colIndex: number) => {
