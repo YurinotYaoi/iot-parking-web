@@ -1,5 +1,5 @@
 import admin from 'firebase-admin';
-import { db } from '@/lib/firebase';
+import { db } from '@/lib/configs/firebase';
 
 export async function getAllUsers() {
   const snapshot = await db.ref('users').once('value');
