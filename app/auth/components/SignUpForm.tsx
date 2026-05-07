@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebaseClient";
-import { useToast } from "@/components/Toast";
+import { toast } from "sonner";
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -17,29 +17,26 @@ const SignUpForm = () => {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
-  const { showToast, ToastContainer } = useToast();
 
   const handleRegister = async () => {
-    // Client-side validation
     if (!email || !firstName || !lastName || !password || !confirmPassword) {
-      showToast("Please fill in all required fields.", "error");
+      toast.error("Please fill in all required fields.");
       return;
     }
 
     if (password !== confirmPassword) {
-      showToast("Passwords do not match.", "error");
+      toast.error("Passwords do not match.");
       return;
     }
 
     if (password.length < 6) {
-      showToast("Password must be at least 6 characters.", "error");
+      toast.error("Password must be at least 6 characters.");
       return;
     }
 
     setLoading(true);
 
     try {
-      // 1. Register user via API
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -57,26 +54,24 @@ const SignUpForm = () => {
       const data = await res.json();
 
       if (res.status === 409) {
-        showToast("This email is already registered. Please log in instead.", "error");
+        toast.error("This email is already registered. Please log in instead.");
         setLoading(false);
         return;
       }
 
       if (res.status < 200 || res.status >= 300) {
-        showToast(data.message || "Registration failed. Please try again.", "error");
+        toast.error(data.message || "Registration failed. Please try again.");
         setLoading(false);
         return;
       }
 
-      // 2. Sign in to get token
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const token = await userCredential.user.getIdToken();
 
-      // 3. Store token in localStorage
       localStorage.setItem("authToken", token);
       localStorage.setItem("userId", userCredential.user.uid);
 
-      showToast("Account created successfully! Redirecting...", "success");
+      toast.success("Account created successfully! Redirecting...");
 
       setTimeout(() => {
         router.push("/dashboard");
@@ -88,25 +83,22 @@ const SignUpForm = () => {
         const firebaseErr = err as { code?: string };
         switch (firebaseErr.code) {
           case "auth/email-already-in-use":
-            showToast("This email is already in use.", "error");
+            toast.error("This email is already in use.");
             break;
           case "auth/invalid-email":
-            showToast("Invalid email address.", "error");
+            toast.error("Invalid email address.");
             break;
           case "auth/weak-password":
-            showToast("Password is too weak. Use at least 6 characters.", "error");
+            toast.error("Password is too weak. Use at least 6 characters.");
             break;
           case "auth/network-request-failed":
-            showToast("Network error. Please check your connection.", "error");
+            toast.error("Network error. Please check your connection.");
             break;
           default:
-            showToast(
-              err instanceof Error ? err.message : "Something went wrong. Please try again.",
-              "error"
-            );
+            toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
         }
       } else {
-        showToast("An unexpected error occurred. Please try again.", "error");
+        toast.error("An unexpected error occurred. Please try again.");
       }
 
       setLoading(false);
@@ -114,73 +106,70 @@ const SignUpForm = () => {
   };
 
   return (
-    <>
-      <ToastContainer />
-      <form className="flex flex-col">
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={loading}
-        />
+    <form className="flex flex-col">
+      <label htmlFor="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        disabled={loading}
+      />
 
-        <label htmlFor="firstName">First Name</label>
-        <input
-          type="text"
-          id="firstName"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          disabled={loading}
-        />
+      <label htmlFor="firstName">First Name</label>
+      <input
+        type="text"
+        id="firstName"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        disabled={loading}
+      />
 
-        <label htmlFor="middleName">Middle Name</label>
-        <input
-          type="text"
-          id="middleName"
-          value={middleName}
-          onChange={(e) => setMiddleName(e.target.value)}
-          disabled={loading}
-        />
+      <label htmlFor="middleName">Middle Name</label>
+      <input
+        type="text"
+        id="middleName"
+        value={middleName}
+        onChange={(e) => setMiddleName(e.target.value)}
+        disabled={loading}
+      />
 
-        <label htmlFor="lastName">Last Name</label>
-        <input
-          type="text"
-          id="lastName"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          disabled={loading}
-        />
+      <label htmlFor="lastName">Last Name</label>
+      <input
+        type="text"
+        id="lastName"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        disabled={loading}
+      />
 
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={loading}
-        />
+      <label htmlFor="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        disabled={loading}
+      />
 
-        <label htmlFor="confirmPassword">Confirm Password</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          disabled={loading}
-        />
+      <label htmlFor="confirmPassword">Confirm Password</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        disabled={loading}
+      />
 
-        <button
-          type="button"
-          className="w-full rounded-md bg-blue-500 py-2 px-4 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-4 disabled:opacity-50"
-          onClick={handleRegister}
-          disabled={loading}
-        >
-          {loading ? "Signing up..." : "Sign Up"}
-        </button>
-      </form>
-    </>
+      <button
+        type="button"
+        className="w-full rounded-md bg-blue-500 py-2 px-4 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-4 disabled:opacity-50"
+        onClick={handleRegister}
+        disabled={loading}
+      >
+        {loading ? "Signing up..." : "Sign Up"}
+      </button>
+    </form>
   );
 };
 

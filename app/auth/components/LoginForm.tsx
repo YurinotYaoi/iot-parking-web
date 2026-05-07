@@ -3,17 +3,15 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebaseClient";
-import { onAuthStateChanged } from "firebase/auth";
-import { useToast } from "@/components/Toast";
+import { toast } from "sonner";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { showToast, ToastContainer } = useToast();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
@@ -25,11 +23,11 @@ const LoginForm = () => {
     return () => unsub();
   }, []);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.SyntheticEvent) => {
     e.preventDefault();
 
     if (!email || !password) {
-      showToast("Please fill in all fields.", "error");
+      toast.error("Please fill in all fields.");
       return;
     }
 
@@ -48,7 +46,7 @@ const LoginForm = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        showToast(data.error || "Login failed. Please try again.", "error");
+        toast.error(data.error || "Login failed. Please try again.");
         setLoading(false);
         return;
       }
@@ -58,7 +56,7 @@ const LoginForm = () => {
         JSON.stringify({ token, user: { ...data.data, password } })
       );
 
-      showToast("Login successful! Redirecting...", "success");
+      toast.success("Login successful! Redirecting...");
 
       setTimeout(() => {
         router.push("/dashboard");
@@ -66,33 +64,24 @@ const LoginForm = () => {
     } catch (err: unknown) {
       console.log("LOGIN ERROR:", err);
 
-      // Map Firebase error codes to user-friendly messages
       if (err instanceof Error && "code" in err) {
         const firebaseErr = err as { code?: string };
         switch (firebaseErr.code) {
-          case "auth/user-not-found":
-            showToast("No account found with this email.", "error");
-            break;
-          case "auth/wrong-password":
-            showToast("Incorrect password. Please try again.", "error");
-            break;
+          case "auth/invalid-credential":
           case "auth/invalid-email":
-            showToast("Invalid email address.", "error");
+            toast.error("Invalid email or password.");
             break;
           case "auth/user-disabled":
-            showToast("This account has been disabled.", "error");
+            toast.error("This account has been disabled.");
             break;
           case "auth/too-many-requests":
-            showToast("Too many failed attempts. Please try again later.", "error");
-            break;
-          case "auth/invalid-credential":
-            showToast("Invalid email or password.", "error");
+            toast.error("Too many failed attempts. Please try again later.");
             break;
           default:
-            showToast(err.message || "Login failed. Please try again.", "error");
+            toast.error(err.message || "Login failed. Please try again.");
         }
       } else {
-        showToast("An unexpected error occurred. Please try again.", "error");
+        toast.error("An unexpected error occurred. Please try again.");
       }
 
       setLoading(false);
@@ -100,42 +89,39 @@ const LoginForm = () => {
   };
 
   return (
-    <>
-      <ToastContainer />
-      <form className="flex flex-col" onSubmit={handleLogin}>
-        <label htmlFor="email" className="text-sm font-medium dark:text-zinc-50">
-          Email
-        </label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="dark:text-zinc-50"
-          disabled={loading}
-        />
+    <form className="flex flex-col" onSubmit={handleLogin}>
+      <label htmlFor="email" className="text-sm font-medium dark:text-zinc-50">
+        Email
+      </label>
+      <input
+        type="email"
+        id="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="dark:text-zinc-50"
+        disabled={loading}
+      />
 
-        <label htmlFor="password" className="text-sm font-medium dark:text-zinc-50">
-          Password
-        </label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="dark:text-zinc-50"
-          disabled={loading}
-        />
+      <label htmlFor="password" className="text-sm font-medium dark:text-zinc-50">
+        Password
+      </label>
+      <input
+        type="password"
+        id="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="dark:text-zinc-50"
+        disabled={loading}
+      />
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-md bg-blue-500 py-2 px-4 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-4 disabled:opacity-50"
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
-    </>
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full rounded-md bg-blue-500 py-2 px-4 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-4 disabled:opacity-50"
+      >
+        {loading ? "Logging in..." : "Login"}
+      </button>
+    </form>
   );
 };
 
