@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getLayoutsByLot } from "@/services/layoutService";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
+import { Skeleton } from "../Skeleton";
 
 interface Layout {
   layoutId: string;
@@ -99,7 +100,21 @@ export default function LayoutList({ lotId = "default-lot-id", onRefresh }: Prop
       </div>
 
       {loading && (
-        <div className="p-4 text-center">Loading layouts...</div>
+        <div aria-busy="true" aria-live="polite">
+          <span className="sr-only">Loading layouts…</span>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="grid grid-cols-5 border-b">
+              <div className="p-3"><Skeleton className="h-5 w-24" /></div>
+              <div className="p-3 flex justify-center"><Skeleton className="h-5 w-16" /></div>
+              <div className="p-3 flex justify-center"><Skeleton className="h-5 w-20" /></div>
+              <div className="p-3 flex justify-center"><Skeleton className="h-5 w-20" /></div>
+              <div className="p-3 flex justify-center gap-2">
+                <Skeleton className="h-9 w-16" />
+                <Skeleton className="h-9 w-16" />
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
       {!loading && layouts.length === 0 && (

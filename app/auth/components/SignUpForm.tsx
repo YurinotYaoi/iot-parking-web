@@ -4,6 +4,7 @@ import { useState} from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebaseClient";
+import { Spinner } from "@/components/Spinner";
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -130,7 +131,12 @@ const SignUpForm = () => {
         onClick={handleRegister}
         disabled={loading}
       >
-        {loading ? "Signing up..." : "Sign Up"}
+        {loading ? (
+          <span className="inline-flex items-center gap-2">
+            <Spinner size="sm" label="Signing up" />
+            Signing up…
+          </span>
+        ) : "Sign Up"}
       </button>
     </form>
   );
