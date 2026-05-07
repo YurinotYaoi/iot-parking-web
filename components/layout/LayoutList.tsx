@@ -24,13 +24,13 @@ interface Props {
 
 export default function LayoutList({ lotId = "default-lot-id", onRefresh }: Props) {
   const [layouts, setLayouts] = useState<Layout[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const router = useRouter();
 
-  const fetchLayouts = async () => {
-    setLoading(true);
+  const fetchLayouts = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     setError(null);
     try {
       const data = await getLayoutsByLot(lotId);
@@ -40,13 +40,13 @@ export default function LayoutList({ lotId = "default-lot-id", onRefresh }: Prop
       console.error("Error fetching layouts:", err);
       setError(err instanceof Error ? err.message : "Failed to fetch layouts");
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchLayouts();
-    const interval = setInterval(() => fetchLayouts(), 5000);
+    const interval = setInterval(() => fetchLayouts(false), 5000);
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lotId]);

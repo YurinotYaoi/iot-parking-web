@@ -8,27 +8,41 @@ import { Suspense, useEffect, useState, useTransition } from "react";
 import { Skeleton } from "@/components/Skeleton";
 import { Spinner } from "@/components/Spinner";
 
-// Skeleton fallback that mimics the shape of LayoutList items
+// Skeleton fallback that mimics the exact table structure of LayoutList
 function LayoutListSkeleton() {
   return (
     <div
-      className="p-4 space-y-3"
+      className="max-h-[770px] overflow-y-auto rounded dark:text-slate-100"
       aria-busy="true"
       aria-live="polite"
     >
       <span className="sr-only">Loading layouts…</span>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div
-          key={i}
-          className="flex items-center justify-between border border-slate-200 dark:border-slate-700 rounded-md p-3"
-        >
-          <div className="flex flex-col gap-2 flex-1">
-            <Skeleton className="h-5 w-1/3" />
-            <Skeleton className="h-3 w-1/2" />
-          </div>
-          <div className="flex gap-2">
-            <Skeleton className="h-8 w-16" />
-            <Skeleton className="h-8 w-16" />
+
+      {/* Top bar */}
+      <div className="flex items-center justify-between gap-2 border-b bg-gray-100 px-3 py-2 text-sm dark:bg-gray-900">
+        <Skeleton className="h-4 w-16" />
+        <Skeleton className="h-4 w-36" />
+      </div>
+
+      {/* Column header row */}
+      <div className="grid grid-cols-5 border-b bg-gray-100 dark:bg-gray-900">
+        <div className="p-3"><Skeleton className="h-4 w-12" /></div>
+        <div className="p-3 flex justify-center"><Skeleton className="h-4 w-10" /></div>
+        <div className="p-3 flex justify-center"><Skeleton className="h-4 w-12" /></div>
+        <div className="p-3 flex justify-center"><Skeleton className="h-4 w-16" /></div>
+        <div className="p-3 flex justify-center"><Skeleton className="h-4 w-14" /></div>
+      </div>
+
+      {/* Data rows */}
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="grid grid-cols-5 border-b">
+          <div className="p-3"><Skeleton className="h-5 w-24" /></div>
+          <div className="p-3 flex justify-center"><Skeleton className="h-5 w-16" /></div>
+          <div className="p-3 flex justify-center"><Skeleton className="h-5 w-20" /></div>
+          <div className="p-3 flex justify-center"><Skeleton className="h-5 w-20" /></div>
+          <div className="p-3 flex justify-center gap-2">
+            <Skeleton className="h-9 w-16" />
+            <Skeleton className="h-9 w-16" />
           </div>
         </div>
       ))}

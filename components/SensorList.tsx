@@ -37,7 +37,7 @@ type SpotRow = {
 export default function SensorList() {
   const [spots, setSpots] = useState<SpotRow[]>([]);
   const [selectedSpot, setSelectedSpot] = useState<SpotRow | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   const fetchSpots = async (showLoading = true) => {
