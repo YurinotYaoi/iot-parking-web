@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/Navbar";
+import Navbar from "@/components/Navbar";
+import MainWrapper from "@/components/MainWrapper";
 import { ThemeProvider } from "next-themes";
 
 const geistSans = Geist({
@@ -14,17 +15,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const metadata: Metadata = {
+  title: "FlexPark",
+  description: "Smart parking management system",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}> 
-      <body className="antialiased overflow-x-hidden">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable}`}
+    >
+      <body className="antialiased">
         <ThemeProvider attribute="class" enableSystem defaultTheme="system">
           <Navbar />
-          {children}
+          <MainWrapper>{children}</MainWrapper>
         </ThemeProvider>
       </body>
     </html>
