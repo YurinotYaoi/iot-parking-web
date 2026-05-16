@@ -1,5 +1,5 @@
 import admin from 'firebase-admin';
-import { db } from '@/lib/firebase';
+import { db } from '@/lib/configs/firebase';
 import { isValidEmail, isValidPassword } from '@/utils/validate';
 
 export async function getAllUsers() {
