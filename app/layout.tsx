@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/Navbar";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,6 +23,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}> 
       <body className="antialiased overflow-x-hidden">
         <ThemeProvider attribute="class" enableSystem defaultTheme="system">
+          <Toaster />
           <Navbar />
           {children}
         </ThemeProvider>

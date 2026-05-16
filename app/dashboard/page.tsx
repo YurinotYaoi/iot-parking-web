@@ -13,6 +13,7 @@ import type { UserProfile } from "@/models/user";
 import SensorList from "@/components/SensorList";
 import CreateSensorModal from "@/components/modals/CreateSensorModal";
 import LocationModal from "@/components/modals/LocationModal";
+import { toast } from "sonner";
 
 export default function DashboardScreen() {
     useEffect(() => {
@@ -24,6 +25,7 @@ export default function DashboardScreen() {
   // Logout
   const handleLogout = async () => {
     await signOut(auth);
+    toast.success("Signed out successfully");
     router.push("/");
   };
 
