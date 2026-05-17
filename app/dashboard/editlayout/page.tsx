@@ -153,31 +153,36 @@ export default function EditLayoutPage() {
 
   if (loading) {
     return (
-      <div className="p-6 flex items-center justify-center h-screen dark:bg-slate-950 dark:text-slate-100">
-        <div className="text-lg">Loading layout...</div>
+      <div className="fp-surface">
+        <div className="fp-content p-6 flex items-center justify-center min-h-screen">
+          <div className="text-lg text-muted-foreground animate-pulse">Loading layout...</div>
+        </div>
       </div>
     );
   }
 
   if (!layoutId) {
     return (
-      <div className="p-6 flex items-center justify-center h-screen dark:bg-slate-950">
-        <div className="text-lg text-red-600 dark:text-red-400">No layout ID provided</div>
+      <div className="fp-surface">
+        <div className="fp-content p-6 flex items-center justify-center min-h-screen">
+          <div className="text-lg text-destructive">No layout ID provided</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <main className="flex flex-col w-full items-center justify-center">
-      <div className="w-screen max-w-600 flex-rows h-213">
+    <div className="fp-surface">
+      <main className="fp-content flex flex-col w-full items-center px-3 py-4 sm:px-6">
+      <div className="w-full max-w-[1600px] flex flex-col gap-3">
 
-        <div className="p-2 flex flex-col gap-6 dark:text-slate-100 dark:bg-slate-950 h-213">
+        <div className="flex flex-col gap-3 min-h-[calc(100vh-7rem)]">
           {/* Header with title and actions */}
-          <div className="w-full flex border-2 border-gray-800 rounded-md p-1 justify-between">
-            <h1 className="font-bold dark:text-slate-100 h-full flex items-center pl-2">
+          <div className="fp-panel w-full flex flex-wrap items-center gap-2 p-3 justify-between">
+            <h1 className="font-bold text-lg tracking-tight text-foreground flex items-center pl-1">
               Edit Layout
             </h1>
-            <div className="flex gap-1">
+            <div className="flex gap-2">
               <Button
                 onClick={handleCancel}
                 variant="outline"
@@ -187,7 +192,7 @@ export default function EditLayoutPage() {
               <Button
                 onClick={handleSave}
                 disabled={saving}
-                className="shadow-md active:shadow-inner active:translate-y-px px-6 py-2 bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-white disabled:opacity-50"
+                className="px-6"
               >
                 {saving ? "Saving..." : "Save Changes"}
               </Button>
@@ -195,22 +200,22 @@ export default function EditLayoutPage() {
           </div>
 
           {error && (
-            <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-100 px-4 py-3 rounded">
+            <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
               {error}
             </div>
           )}
 
-          
-          <div className="flex gap-6 flex-1 overflow-hidden ">
-            
+
+          <div className="flex flex-col lg:flex-row gap-3 flex-1 overflow-hidden">
+
             {/* LEFT - GRID AREA - TOOLBAR AND GRID */}
-            <div className="flex-1 flex flex-col gap-4 overflow-hidden border-2 border-gray-800 rounded-md p-2">
+            <div className="fp-panel flex-1 flex flex-col gap-4 overflow-hidden p-4">
               <Toolbar selectedTool={selectedTool} setSelectedTool={setSelectedTool} />
-              <div className="flex flex-col gap-2">
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex flex-col gap-1">
+                <p className="text-sm text-foreground">
                   {selectedSpot ? `Selected Spot: ${selectedSpot.slotName}` : "Select a tool or spot to place on grid"}
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Right-click to clear cells</p>
+                <p className="text-xs text-muted-foreground">Right-click to clear cells</p>
               </div>
 
               <Grid
@@ -221,49 +226,49 @@ export default function EditLayoutPage() {
                 sensorMap={sensorMap}
               />
 
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 Grid Size: {rows} rows × {cols} columns = {rows * cols} cells
               </div>
             </div>
 
             {/* RIGHT - CONTROL PANEL */}
-            <div className="w-80 flex flex-col gap-6 overflow-y-auto dark:text-slate-100">
+            <div className="w-full lg:w-80 flex flex-col gap-3 overflow-y-auto">
               {/* LAYOUT INFO */}
-              <div className="border rounded-lg p-4 bg-gray-50 dark:bg-slate-900 dark:border-slate-700">
-                <h2 className="font-semibold mb-4 dark:text-slate-100">Layout Info</h2>
+              <div className="fp-panel p-4">
+                <h2 className="font-semibold mb-4 text-foreground">Layout Info</h2>
 
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="layout-name" className="block text-sm font-medium mb-1 dark:text-slate-100">Layout Name</label>
+                    <label htmlFor="layout-name" className="block text-sm font-medium mb-1.5 text-foreground">Layout Name</label>
                     <input
                       id="layout-name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Enter layout name"
-                      className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                      className="w-full rounded-lg border border-input bg-background p-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="layout-notes" className="block text-sm font-medium mb-1 dark:text-slate-100">Notes</label>
+                    <label htmlFor="layout-notes" className="block text-sm font-medium mb-1.5 text-foreground">Notes</label>
                     <textarea
                       id="layout-notes"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="Enter layout notes"
-                      className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 h-20 resize-none"
+                      className="w-full rounded-lg border border-input bg-background p-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30 h-20 resize-none"
                     />
                   </div>
                 </div>
               </div>
 
               {/* GRID CONFIGURATION */}
-              <div className="border rounded-lg p-4 bg-gray-50 dark:bg-slate-900 dark:border-slate-700">
-                <h2 className="font-semibold mb-4 dark:text-slate-100">Grid Configuration</h2>
+              <div className="fp-panel p-4">
+                <h2 className="font-semibold mb-4 text-foreground">Grid Configuration</h2>
 
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="grid-rows" className="block text-sm font-medium mb-1 dark:text-slate-100">Rows</label>
+                    <label htmlFor="grid-rows" className="block text-sm font-medium mb-1.5 text-foreground">Rows</label>
                     <input
                       id="grid-rows"
                       type="number"
@@ -271,12 +276,12 @@ export default function EditLayoutPage() {
                       max="50"
                       value={rows}
                       onChange={(e) => handleRowsChange(Number(e.target.value))}
-                      className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                      className="w-full rounded-lg border border-input bg-background p-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="grid-cols" className="block text-sm font-medium mb-1 dark:text-slate-100">Columns</label>
+                    <label htmlFor="grid-cols" className="block text-sm font-medium mb-1.5 text-foreground">Columns</label>
                     <input
                       id="grid-cols"
                       type="number"
@@ -284,24 +289,24 @@ export default function EditLayoutPage() {
                       max="50"
                       value={cols}
                       onChange={(e) => handleColsChange(Number(e.target.value))}
-                      className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                      className="w-full rounded-lg border border-input bg-background p-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
                     />
                   </div>
                 </div>
               </div>
 
               {/* AVAILABLE SPOTS */}
-              <div className="border rounded-lg p-4 bg-gray-50 dark:bg-slate-900 dark:border-slate-700 flex-1 overflow-hidden flex flex-col">
+              <div className="fp-panel p-4 flex-1 overflow-hidden flex flex-col">
                 <AvailableSpots
                   placedSpotIds={placedSpots}
                   onSelectSpot={handleSelectSpot}
                   currentLayoutId={layoutId}
                 />
                 {selectedSpot && (
-                  <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded">
-                    <p className="text-sm font-medium text-blue-900 dark:text-blue-100">Current Selection</p>
-                    <p className="text-sm text-blue-800 dark:text-blue-200">{selectedSpot.slotName}</p>
-                    <small className="text-blue-600 dark:text-blue-300">Click on a grid cell to place it</small>
+                  <div className="mt-4 p-3 rounded-lg border border-primary/30 bg-primary/10">
+                    <p className="text-sm font-medium text-foreground">Current Selection</p>
+                    <p className="text-sm text-muted-foreground">{selectedSpot.slotName}</p>
+                    <small className="text-primary">Click on a grid cell to place it</small>
                   </div>
                 )}
               </div>
@@ -309,6 +314,7 @@ export default function EditLayoutPage() {
           </div>
         </div>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

@@ -1,17 +1,47 @@
-import { registerUser } from '@/services/authService';
-import { db } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
+import { validateRequiredFields, isValidEmail, isValidPassword } from '@/utils/validate';
 import { successResponse, errorResponse } from '@/utils/response';
 
 export async function POST(req) {
-  const { secretKey, ...userData } = await req.json();
+  try {
+    const { secretKey, ...body } = await req.json();
 
-  // Validate secret key for admin registration
-  if (secretKey !== process.env.ADMIN_SECRET_KEY) {
-    return errorResponse('Invalid secret key', 403);
+    // Validate secret key for admin registration
+    if (secretKey !== process.env.ADMIN_SECRET_KEY) {
+      return errorResponse('Invalid secret key', 403);
+    }
+
+    // Validate required fields
+    const missing = validateRequiredFields(body, ['email', 'password', 'firstName', 'lastName']);
+    if (missing) return errorResponse(missing, 400);
+
+    // Validate email and password formats
+    if (!isValidEmail(body.email)) return errorResponse('Invalid email format', 400);
+    if (!isValidPassword(body.password)) return errorResponse('Password must be at least 6 characters', 400);
+
+    // Create user using Firebase Admin Auth
+    const userRecord = await auth.createUser({
+      email: body.email,
+      password: body.password,
+    });
+
+    // Store the admin user in Realtime Database
+    await db.ref(`users/${userRecord.uid}`).set({
+      uid: userRecord.uid,
+      email: body.email,
+      firstName: body.firstName,
+      middleName: body.middleName || '',
+      lastName: body.lastName,
+      role: 'admin',
+      createdAt: new Date().toISOString(),
+    });
+
+    return successResponse({ uid: userRecord.uid, email: userRecord.email, role: 'admin' }, 201);
+  } catch (err) {
+    console.error('Register admin error:', err);
+    if (err.code === 'auth/email-already-exists') {
+      return errorResponse('Email is already registered', 409);
+    }
+    return errorResponse(err.message, 500);
   }
-
-  const user = await registerUser({ ...userData, role: 'admin' });
-  // Override the role to admin in DB
-  await db.ref(`users/${user.uid}/role`).set('admin');
-  return successResponse({ uid: user.uid, role: 'admin' }, 201);
 }

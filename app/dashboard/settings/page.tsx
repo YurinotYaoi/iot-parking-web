@@ -164,10 +164,10 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-700" />
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+      <div className="fp-surface flex items-center justify-center">
+        <div className="fp-content flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">
             Loading your profile…
           </p>
         </div>
@@ -176,7 +176,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="fp-surface">
+      <div className="fp-content">
       {/* Toast notification */}
       {toast && (
         <div className="fixed right-6 top-6 z-50 animate-in slide-in-from-top-2 fade-in duration-300">
@@ -382,6 +383,7 @@ export default function SettingsPage() {
             </button>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );

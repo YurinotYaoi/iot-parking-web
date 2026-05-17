@@ -77,8 +77,9 @@ export default function DashboardScreen() {
   };
 
   return (
-    <main className="flex flex-col w-full items-center justify-center">
-      <div className="w-screen max-w-600 flex flex-rows h-213">
+    <div className="fp-surface">
+      <main className="fp-content flex flex-col w-full items-center justify-center px-3 py-4 sm:px-6">
+      <div className="w-full max-w-[1600px] flex flex-col lg:flex-row gap-3 min-h-[calc(100vh-7rem)]">
 
         {/* Modal */}
         {showCSModal && (
@@ -94,28 +95,29 @@ export default function DashboardScreen() {
         )}
 
         {/* LEFT PANEL */}
-        <div className="w-[30%] p-2">
-          <div className="h-full w-full border-2 border-gray-800 rounded-md p-1">
-            <div className="p-10">
-              {user ? 
-                <h1 className="text-center text-3xl">
+        <div className="w-full lg:w-[30%]">
+          <div className="fp-panel h-full w-full p-5">
+            <div className="pb-6 mb-2 border-b border-border">
+              <p className="fp-eyebrow mb-3">Signed in</p>
+              {user ?
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">
                   {user.firstName} {user.lastName}
-                </h1> : 
-                <h1 className="text-center text-3xl">
+                </h1> :
+                <h1 className="text-2xl font-bold tracking-tight text-muted-foreground animate-pulse">
                   Loading user...
                 </h1>}
             </div>
 
-            <div className="text-2xl">
+            <div className="space-y-4">
               <Button
-                className="shadow-md active:shadow-inner active:translate-y-px w-full rounded-sm justify-start bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 "
+                className="w-full justify-start"
                 onClick={openLocationModal}
               >
-                <FaMapLocationDot className="!size-5" /> | {user?.location?.name || "Location"}
+                <FaMapLocationDot className="!size-5" /> {user?.location?.name || "Location"}
               </Button>
 
               {user?.location?.link && (
-                <div className="mt-4">
+                <div className="overflow-hidden rounded-lg border border-border">
                   <iframe
                     src={user.location.link}
                     width="100%"
@@ -124,7 +126,6 @@ export default function DashboardScreen() {
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    className="rounded-md"
                   />
                 </div>
               )}
@@ -133,43 +134,44 @@ export default function DashboardScreen() {
         </div>
 
         {/* RIGHT PANEL */}
-        <div className="w-[70%] p-2 flex flex-col">
-          <div className="h-fit w-full flex border-2 border-gray-800 rounded-md p-1 mb-1 justify-between">
-            <div>
-              <Button className="shadow-md active:shadow-inner active:translate-y-px rounded-sm mr-1 bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 " onClick={openCSModal}>
+        <div className="w-full lg:w-[70%] flex flex-col gap-3">
+          <div className="fp-panel h-fit w-full flex flex-wrap gap-2 p-3 justify-between">
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={openCSModal}>
                 Create Sensor +
               </Button>
 
               <Button
-                className="shadow-md active:shadow-inner active:translate-y-px rounded-sm bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 "
+                variant="outline"
                 onClick={() => router.push("/dashboard/layout")}
               >
-                Layouts 
+                Layouts
                 <FaTableList />
               </Button>
             </div>
 
-            <div>
+            <div className="flex flex-wrap gap-2">
               <Button
-                className="shadow-md active:shadow-inner active:translate-y-px rounded-sm mr-1 bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 "
+                variant="outline"
                 onClick={() => router.push("/dashboard/settings")}
               >
                 <IoSettings />
                 Settings
               </Button>
 
-              <Button className="shadow-md active:shadow-inner active:translate-y-px rounded-sm bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 " onClick={handleLogout}>
+              <Button variant="destructive" onClick={handleLogout}>
                 <IoLogOutOutline />
                 Logout
               </Button>
             </div>
           </div>
 
-          <div className="grow w-full border-2 border-gray-800 rounded-md">
+          <div className="fp-panel grow w-full overflow-hidden">
             <SensorList />
           </div>
         </div>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

@@ -26,17 +26,17 @@ const getCellContent = (
   if (type === "road") {
     return <div className="text-white font-bold">ROAD</div>;
   }
-  return <div className="text-gray-500 text-xs">empty</div>;
+  return <div className="text-muted-foreground text-xs">empty</div>;
 };
 
 const getColor = (type: string, liveStatus: string | undefined) => {
-  if (type === "road") return "bg-gray-500 hover:bg-gray-600";
+  if (type === "road") return "bg-slate-500 hover:bg-slate-600";
   if (type === "slot") {
-    if (liveStatus === "free") return "bg-green-500 hover:bg-green-600";
-    if (liveStatus === "occupied") return "bg-red-500 hover:bg-red-600";
-    return "bg-blue-500 hover:bg-blue-600";
+    if (liveStatus === "free") return "bg-emerald-500 hover:bg-emerald-600";
+    if (liveStatus === "occupied") return "bg-red-600 hover:bg-red-700";
+    return "bg-blue-600 hover:bg-blue-700";
   }
-  return "bg-green-100 hover:bg-green-200";
+  return "bg-muted hover:bg-accent border border-border";
 };
 
 export default function Cell({ data, liveStatus, onClick, onRightClick }: Props) {

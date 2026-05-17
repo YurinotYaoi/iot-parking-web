@@ -14,23 +14,23 @@ export default function Toolbar({ selectedTool, setSelectedTool }: Props) {
   ];
 
   return (
-    <div className="flex gap-1 flex-wrap">
+    <div className="flex gap-2 flex-wrap">
       {tools.map((tool) => (
         <button
           key={tool.value}
           onClick={() => setSelectedTool(tool.value)}
-          className={`px-4 py-2 border rounded transition-colors ${
-            selectedTool === tool.value 
-              ? "bg-slate-800 text-white border-black " 
-              : "bg-white border-gray-300 hover:bg-gray-100 dark:bg-slate-700 dark:border-slate-600 dark:hover:bg-slate-600 dark:text-slate-100   "
+          className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
+            selectedTool === tool.value
+              ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20"
+              : "bg-background border-border text-foreground hover:bg-accent hover:border-primary/40"
           }`}
         >
           {tool.label}
         </button>
       ))}
-      
+
       {selectedTool === null && (
-        <div className="text-sm text-gray-500 self-center">
+        <div className="text-sm text-muted-foreground self-center">
           Select a tool (right-click to clear cells)
         </div>
       )}

@@ -135,32 +135,32 @@ export default function CreateSensorModal({ onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onMouseDown={onClose}
     >
       <div
-        className="bg-white p-6 rounded-xl w-[400px] dark:bg-slate-900 dark:text-slate-100"
+        className="fp-panel bg-card text-card-foreground p-6 w-full max-w-[420px]"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold mb-4">Create Slot & Assign Sensor</h2>
+        <h2 className="text-xl font-bold tracking-tight mb-5">Create Slot &amp; Assign Sensor</h2>
 
-        <label className="block mb-1 text-sm text-slate-700 dark:text-slate-200">Slot Name</label>
+        <label className="block mb-1.5 text-sm font-medium text-foreground">Slot Name</label>
         <input
-          className="w-full border border-slate-300 bg-white p-2 rounded mb-2 text-slate-900 outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+          className="w-full rounded-lg border border-input bg-background p-2.5 mb-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
           value={slotName}
           onChange={(e) => setSlotName(e.target.value)}
         />
 
-        <label className="block mb-1 text-sm text-slate-700 dark:text-slate-200">Vehicle Type</label>
+        <label className="block mb-1.5 text-sm font-medium text-foreground">Vehicle Type</label>
         <input
-          className="w-full border border-slate-300 bg-white p-2 rounded mb-4 text-slate-900 outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+          className="w-full rounded-lg border border-input bg-background p-2.5 mb-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
           value={vehicleType}
           onChange={(e) => setVehicleType(e.target.value)}
         />
 
-        <label className="block mb-2 text-sm text-slate-700 dark:text-slate-200">Select Sensor</label>
+        <label className="block mb-1.5 text-sm font-medium text-foreground">Select Sensor</label>
         <select
-          className="w-full border border-slate-300 bg-white p-2 mb-4 rounded text-slate-900 outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+          className="w-full rounded-lg border border-input bg-background p-2.5 mb-5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
           value={selectedSensor}
           onChange={(e) => setSelectedSensor(e.target.value)}
         >
@@ -173,7 +173,7 @@ export default function CreateSensorModal({ onClose }: Props) {
         </select>
 
         <div className="flex justify-end gap-2">
-          <Button className="shadow-md active:shadow-inner active:translate-y-px bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800  flex-1" onClick={handleCreateAndAssign} disabled={loading}>
+          <Button className="flex-1" onClick={handleCreateAndAssign} disabled={loading}>
             {loading ? "Saving..." : "Create & Assign"}
           </Button>
           <Button variant="outline" onClick={onClose} className="flex-1">

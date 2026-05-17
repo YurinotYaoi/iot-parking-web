@@ -32,25 +32,25 @@ export default function LocationModal({ onClose, onSave, initialName = "", initi
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <button
         type="button"
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
         aria-label="Close location modal"
       />
 
-      <div className="relative bg-white p-6 rounded-xl shadow-xl dark:bg-slate-900 dark:text-slate-100 w-[500px]">
-        <h2 className="text-xl font-semibold mb-4">Set Location</h2>
+      <div className="fp-panel relative bg-card text-card-foreground p-6 w-full max-w-[500px]">
+        <h2 className="text-xl font-bold tracking-tight mb-5">Set Location</h2>
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="location-name" className="block text-sm font-medium text-slate-900 dark:text-slate-100">
+            <label htmlFor="location-name" className="block text-sm font-medium mb-1.5 text-foreground">
               Location Name
             </label>
             <input
               id="location-name"
-              className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="w-full rounded-lg border border-input bg-background p-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Main Parking Lot"
@@ -58,12 +58,12 @@ export default function LocationModal({ onClose, onSave, initialName = "", initi
           </div>
 
           <div>
-            <label htmlFor="location-link" className="block text-sm font-medium text-slate-900 dark:text-slate-100">
+            <label htmlFor="location-link" className="block text-sm font-medium mb-1.5 text-foreground">
               Google Maps Embed (Paste iframe HTML or link)
             </label>
             <input
               id="location-link"
-              className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="w-full rounded-lg border border-input bg-background p-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
               value={link}
               onChange={(e) => handleLinkChange(e.target.value)}
               placeholder="Paste iframe HTML or embed link"
@@ -72,7 +72,7 @@ export default function LocationModal({ onClose, onSave, initialName = "", initi
 
           {link && (
             <div>
-              <label className="block text-sm font-medium text-slate-900 dark:text-slate-100 mb-2">
+              <label className="block text-sm font-medium mb-2 text-foreground">
                 Preview
               </label>
               <iframe
@@ -83,14 +83,14 @@ export default function LocationModal({ onClose, onSave, initialName = "", initi
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                className="rounded-md"
+                className="rounded-lg border border-border"
               />
             </div>
           )}
         </div>
 
         <div className="mt-6 flex gap-3">
-          <Button className="flex-1 shadow-md active:shadow-inner active:translate-y-px bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 " onClick={handleSave}>
+          <Button className="flex-1" onClick={handleSave}>
             Save Location
           </Button>
           <Button variant="outline" className="flex-1" onClick={onClose}>

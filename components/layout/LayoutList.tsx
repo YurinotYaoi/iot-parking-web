@@ -74,63 +74,64 @@ export default function LayoutList({ lotId = "default-lot-id", onRefresh }: Prop
   };
 
   return (
-    <div className="max-h-[770px] overflow-y-auto rounded dark:text-slate-100">
-      <div className="flex items-center justify-between gap-2 border-b 
-      bg-gray-100 px-3 py-2 text-sm 
-      dark:bg-gray-900">
-        <span className="font-semibold">Layouts</span>
-        <span className="text-slate-500 dark:text-slate-400">
+    <div className="max-h-[calc(100vh-12rem)] overflow-y-auto text-foreground">
+      <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-border
+      bg-card/95 px-4 py-3 text-sm backdrop-blur">
+        <span className="font-semibold tracking-tight">Layouts</span>
+        <span className="text-xs text-muted-foreground">
           {error ? (
-            <span className="text-red-600 dark:text-red-400">{error}</span>
+            <span className="text-destructive">{error}</span>
           ) : (
             `Last updated ${lastUpdated || "—"}`
           )}
         </span>
       </div>
 
-      <div className="grid grid-cols-5 border-b 
-      bg-gray-100 
-      dark:bg-gray-900">
-        <div className="p-3 font-semibold">Name</div>
-        <div className="p-3 text-center font-semibold">Size</div>
-        <div className="p-3 text-center font-semibold">Notes</div>
-        <div className="p-3 text-center font-semibold">Created</div>
-        <div className="p-3 text-center font-semibold">Actions</div>
+      <div className="grid grid-cols-5 border-b border-border
+      bg-muted/50 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="p-3">Name</div>
+        <div className="p-3 text-center">Size</div>
+        <div className="p-3 text-center">Notes</div>
+        <div className="p-3 text-center">Created</div>
+        <div className="p-3 text-center">Actions</div>
       </div>
 
       {loading && (
-        <div className="p-4 text-center">Loading layouts...</div>
+        <div className="p-6 text-center text-sm text-muted-foreground">Loading layouts...</div>
       )}
 
       {!loading && layouts.length === 0 && (
-        <div className="p-4 text-center text-slate-500 dark:text-slate-400">No layouts found</div>
+        <div className="p-6 text-center text-sm text-muted-foreground">No layouts found</div>
       )}
 
       {!loading && layouts.length > 0 &&
         layouts.map((layout) => (
-          <div key={layout.layoutId} className="grid grid-cols-5 border-b 
-          hover:bg-gray-100 
-          dark:hover:bg-gray-900">
-            <div className="p-3">{layout.layoutName}</div>
-            <div className="p-3 text-center text-sm">
+          <div key={layout.layoutId} className="grid grid-cols-5 border-b border-border text-sm
+          transition-colors hover:bg-accent/40">
+            <div className="p-3 font-medium">{layout.layoutName}</div>
+            <div className="p-3 text-center text-muted-foreground">
               {layout.totalRows} × {layout.totalColumns}
             </div>
-            <div className="p-3 text-center text-sm text-slate-600 dark:text-slate-400">
+            <div className="p-3 text-center text-muted-foreground">
               {getTruncatedNotes(layout.notes)}
             </div>
-            <div className="p-3 text-center text-sm">
+            <div className="p-3 text-center text-muted-foreground">
               {new Date(layout.createdAt).toLocaleDateString()}
             </div>
             <div className="p-3 flex justify-center gap-2">
               <Button
+                size="sm"
+                variant="outline"
                 onClick={() => handleEdit(layout.layoutId)}
-                className="shadow-md active:shadow-inner active:translate-y-px grow bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-white"
+                className="grow"
               >
                 Edit
               </Button>
               <Button
+                size="sm"
+                variant="destructive"
                 onClick={() => handleDelete(layout.layoutId)}
-                className="shadow-md active:shadow-inner active:translate-y-px grow bg-red-600 text-white hover:bg-white hover:text-red-600 hover:border-red-600 border border-transparent dark:bg-red-700 dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-white"
+                className="grow"
               >
                 Delete
               </Button>

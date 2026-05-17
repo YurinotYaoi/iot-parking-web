@@ -75,33 +75,31 @@ export default function SensorList() {
   };
 
   return (
-    <div className="max-h-[770px] overflow-y-auto rounded dark:text-slate-100">
+    <div className="max-h-[calc(100vh-12rem)] overflow-y-auto text-foreground">
       <EditSpotModal spot={selectedSpot} onClose={closeModal} onSaved={handleRefresh} />
 
-      <div className="flex items-center justify-between gap-2 border-b 
-      bg-gray-100 px-3 py-2 text-sm 
-      dark:bg-gray-900">
-        <span className="font-semibold">Parking slots</span>
-        <span className="text-slate-500 dark:text-slate-400">Auto-refresh every 5s · last updated {lastUpdated || "—"}</span>
+      <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-border
+      bg-card/95 px-4 py-3 text-sm backdrop-blur">
+        <span className="font-semibold tracking-tight">Parking slots</span>
+        <span className="text-xs text-muted-foreground">Auto-refresh every 5s · last updated {lastUpdated || "—"}</span>
       </div>
 
-      <div className="grid grid-cols-7 border-b 
-      bg-gray-100 
-      dark:bg-gray-900">
-        <div className="p-3 font-semibold">Slot Name</div>
-        <div className="p-3 text-center font-semibold">Layout Name</div>
-        <div className="p-3 text-center font-semibold">Grid Column</div>
-        <div className="p-3 text-center font-semibold">Grid Row</div>
-        <div className="p-3 text-center font-semibold">Status</div>
-        <div className="p-3 text-center font-semibold">Sensor</div>
-        <div className="p-3 text-center font-semibold">Action</div>
+      <div className="grid grid-cols-7 border-b border-border
+      bg-muted/50 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="p-3">Slot Name</div>
+        <div className="p-3 text-center">Layout Name</div>
+        <div className="p-3 text-center">Grid Column</div>
+        <div className="p-3 text-center">Grid Row</div>
+        <div className="p-3 text-center">Status</div>
+        <div className="p-3 text-center">Sensor</div>
+        <div className="p-3 text-center">Action</div>
       </div>
 
       {loading && (
-        <div className="col-span-7 p-4 text-center">Loading slots...</div>
+        <div className="col-span-7 p-6 text-center text-sm text-muted-foreground">Loading slots...</div>
       )}
       {!loading && spots.length === 0 && (
-        <div className="p-4 text-center">No slots found.</div>
+        <div className="p-6 text-center text-sm text-muted-foreground">No slots found.</div>
       )}
       {!loading && spots.length > 0 &&
         spots.map((spot) => {
@@ -114,17 +112,16 @@ export default function SensorList() {
           }
 
           return (
-            <div key={spot.slotId} className="grid grid-cols-7 border-b 
-            hover:bg-gray-100 
-            dark:hover:bg-gray-900">
-              <div className="p-3">{spot.slotName}</div>
-              <div className="p-3 text-center">{spot.layoutInfo?.layoutName || "-"}</div>
-              <div className="p-3 text-center">{spot.layoutInfo?.gridCol || "-"}</div>
-              <div className="p-3 text-center">{spot.layoutInfo?.gridRow || "-"}</div>
+            <div key={spot.slotId} className="grid grid-cols-7 border-b border-border text-sm
+            transition-colors hover:bg-accent/40">
+              <div className="p-3 font-medium">{spot.slotName}</div>
+              <div className="p-3 text-center text-muted-foreground">{spot.layoutInfo?.layoutName || "-"}</div>
+              <div className="p-3 text-center text-muted-foreground">{spot.layoutInfo?.gridCol || "-"}</div>
+              <div className="p-3 text-center text-muted-foreground">{spot.layoutInfo?.gridRow || "-"}</div>
               <div className="p-3 text-center">{statusDisplay}</div>
-              <div className="p-3 text-center">{spot.sensor?.sensorId || "None"}</div>
+              <div className="p-3 text-center text-muted-foreground">{spot.sensor?.sensorId || "None"}</div>
               <div className="p-3 flex justify-center">
-                <Button className="shadow-md active:shadow-inner active:translate-y-px w-full bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-white" onClick={() => setSelectedSpot(spot)}>
+                <Button size="sm" variant="outline" className="w-full" onClick={() => setSelectedSpot(spot)}>
                   Edit
                 </Button>
               </div>

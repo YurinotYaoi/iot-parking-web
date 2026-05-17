@@ -66,27 +66,27 @@ export default function AvailableSpots({ placedSpotIds, onSelectSpot, currentLay
   );
 
   return (
-    <div className="flex flex-col gap-3 dark:text-slate-100">
+    <div className="flex flex-col gap-3 text-foreground">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold dark:text-slate-100">Available Spots</h3>
+        <h3 className="font-semibold text-foreground">Available Spots</h3>
         <button
           onClick={fetchSpots}
           disabled={loading}
-          className="text-xs px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 dark:text-slate-300 dark:border-slate-600"
+          className="text-xs px-2.5 py-1 rounded-md border border-border text-muted-foreground hover:bg-accent hover:text-foreground disabled:opacity-50 transition-colors"
         >
           {loading ? "Loading..." : "Refresh"}
         </button>
       </div>
 
-      {error && <div className="text-red-600 dark:text-red-400 text-sm">{error}</div>}
+      {error && <div className="text-destructive text-sm">{error}</div>}
 
-      <div className="max-h-43 overflow-y-auto border rounded bg-white dark:bg-slate-800 dark:border-slate-700">
+      <div className="max-h-44 overflow-y-auto rounded-lg border border-border bg-background">
         {loading && (
-          <div className="p-4 text-center text-gray-500 dark:text-slate-400">Loading spots...</div>
+          <div className="p-4 text-center text-sm text-muted-foreground">Loading spots...</div>
         )}
 
         {!loading && availableSpots.length === 0 && (
-          <div className="p-4 text-center text-gray-500 dark:text-slate-400">
+          <div className="p-4 text-center text-sm text-muted-foreground">
             {spots.length === 0 ? "No spots available" : "All spots placed or all remaining spots are assigned"}
           </div>
         )}
@@ -103,10 +103,10 @@ export default function AvailableSpots({ placedSpotIds, onSelectSpot, currentLay
               <button
                 key={spot.slotId}
                 onClick={() => onSelectSpot(spot)}
-                className="w-full text-left p-3 border-b cursor-pointer hover:bg-blue-50 transition-colors"
+                className="w-full text-left p-3 border-b border-border cursor-pointer hover:bg-accent/50 transition-colors"
               >
-                <div className="font-semibold text-sm">{spot.slotName}</div>
-                <div className="text-xs text-gray-600 dark:text-slate-400">
+                <div className="font-semibold text-sm text-foreground">{spot.slotName}</div>
+                <div className="text-xs text-muted-foreground">
                   Floor: {spot.floor} | Row: {spot.rowNo} | Col: {spot.columnNo}
                 </div>
                 <div className="text-xs mt-1">
@@ -121,7 +121,7 @@ export default function AvailableSpots({ placedSpotIds, onSelectSpot, currentLay
           })}
 
         {usedSpots.length > 0 && (
-          <div className="p-3 text-xs text-gray-500 dark:text-slate-400 border-t dark:border-slate-700">
+          <div className="p-3 text-xs text-muted-foreground border-t border-border">
             These spots are already assigned to another layout.
           </div>
         )}
@@ -131,13 +131,13 @@ export default function AvailableSpots({ placedSpotIds, onSelectSpot, currentLay
             return (
               <div
                 key={spot.slotId}
-                className="w-full text-left p-3 border-b bg-gray-100 dark:bg-slate-700 opacity-70 dark:text-slate-300 dark:border-slate-700"
+                className="w-full text-left p-3 border-b border-border bg-muted/40 opacity-70 text-muted-foreground"
               >
-                <div className="font-semibold text-sm">{spot.slotName}</div>
-                <div className="text-xs text-gray-600 dark:text-slate-400">
+                <div className="font-semibold text-sm text-foreground">{spot.slotName}</div>
+                <div className="text-xs text-muted-foreground">
                   Used on {spot.layoutInfo?.layoutName || spot.layoutId}
                 </div>
-                <div className="text-xs mt-1 text-gray-500 dark:text-slate-400">
+                <div className="text-xs mt-1 text-muted-foreground">
                   {spot.status}
                 </div>
               </div>

@@ -174,58 +174,58 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <button
         type="button"
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
         aria-label="Close edit slot dialog"
       />
 
-      <div className="relative bg-white p-6 rounded-xl shadow-xl dark:bg-slate-900 dark:text-slate-100" style={{ width: 420 }}>
-        <h2 className="text-xl font-semibold mb-4">Edit Slot</h2>
+      <div className="fp-panel relative bg-card text-card-foreground p-6 w-full max-w-[420px]">
+        <h2 className="text-xl font-bold tracking-tight mb-5">Edit Slot</h2>
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="slot-name" className="block text-sm font-medium text-slate-900 dark:text-slate-100">
+            <label htmlFor="slot-name" className="block text-sm font-medium mb-1.5 text-foreground">
               Slot Name
             </label>
             <input
               id="slot-name"
-              className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="w-full rounded-lg border border-input bg-background p-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
               value={slotName}
               onChange={(e) => setSlotName(e.target.value)}
             />
           </div>
 
           <div>
-            <label htmlFor="vehicle-type" className="block text-sm font-medium text-slate-900 dark:text-slate-100">
+            <label htmlFor="vehicle-type" className="block text-sm font-medium mb-1.5 text-foreground">
               Vehicle Type
             </label>
             <input
               id="vehicle-type"
-              className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="w-full rounded-lg border border-input bg-background p-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
               value={vehicleType}
               onChange={(e) => setVehicleType(e.target.value)}
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-3 text-sm text-slate-700 dark:text-slate-300">
-            <div className="rounded-md border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800">
-              <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Floor</div>
-              <div className="mt-1 text-base text-slate-900 dark:text-slate-100">{floor || "—"}</div>
+          <div className="grid grid-cols-3 gap-3 text-sm">
+            <div className="rounded-lg border border-border bg-muted/50 p-3">
+              <div className="text-xs uppercase tracking-wide text-muted-foreground">Floor</div>
+              <div className="mt-1 text-base text-foreground">{floor || "—"}</div>
             </div>
-            <div className="rounded-md border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800">
-              <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Row</div>
-              <div className="mt-1 text-base text-slate-900 dark:text-slate-100">{rowNo || "—"}</div>
+            <div className="rounded-lg border border-border bg-muted/50 p-3">
+              <div className="text-xs uppercase tracking-wide text-muted-foreground">Row</div>
+              <div className="mt-1 text-base text-foreground">{rowNo || "—"}</div>
             </div>
-            <div className="rounded-md border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800">
-              <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Column</div>
-              <div className="mt-1 text-base text-slate-900 dark:text-slate-100">{columnNo || "—"}</div>
+            <div className="rounded-lg border border-border bg-muted/50 p-3">
+              <div className="text-xs uppercase tracking-wide text-muted-foreground">Column</div>
+              <div className="mt-1 text-base text-foreground">{columnNo || "—"}</div>
             </div>
           </div>
 
-          <div className="space-y-1 text-sm text-slate-600 dark:text-slate-300">
+          <div className="space-y-1 text-sm text-muted-foreground">
             <p>Device Id: {spot.sensor?.deviceId || "None"}</p>
             <p>Owner: {spot.ownerId || "—"}</p>
             <p>Layout: {spot.layoutInfo?.layoutName || spot.layoutId || "—"}</p>
@@ -236,7 +236,7 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
         </div>
 
         <div className="mt-6 flex flex-col gap-3">
-          <Button className="shadow-md active:shadow-inner active:translate-y-px w-full bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 " onClick={handleSave} disabled={saving}>
+          <Button className="w-full" onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save changes"}
           </Button>
 

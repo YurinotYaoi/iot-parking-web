@@ -33,10 +33,8 @@ export default function Grid({
   };
 
   return (
-    <div className="w-full flex-1 border 
-    border-gray-300 bg-gray-50 
-    dark:border-slate-700 dark:bg-slate-900
-    overflow-hidden rounded-lg">
+    <div className="w-full flex-1 border border-border bg-muted/40
+    overflow-hidden rounded-xl">
       <div
         className="grid w-full h-full gap-0.5 p-2"
         style={{
