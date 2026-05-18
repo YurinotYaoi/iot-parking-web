@@ -73,7 +73,7 @@ const SignUpForm = () => {
         type="email"
         id="email"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(event) => setEmail(event.target.value)}
         disabled={loading}
       />
 
@@ -82,7 +82,7 @@ const SignUpForm = () => {
         type="text"
         id="firstName"
         value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
+        onChange={(event) => setFirstName(event.target.value)}
         disabled={loading}
       />
 
@@ -91,7 +91,7 @@ const SignUpForm = () => {
         type="text"
         id="middleName"
         value={middleName}
-        onChange={(e) => setMiddleName(e.target.value)}
+        onChange={(event) => setMiddleName(event.target.value)}
         disabled={loading}
       />
 
@@ -100,7 +100,7 @@ const SignUpForm = () => {
         type="text"
         id="lastName"
         value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
+        onChange={(event) => setLastName(event.target.value)}
         disabled={loading}
       />
 
@@ -111,7 +111,7 @@ const SignUpForm = () => {
         type="password"
         id="password"
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={(event) => setPassword(event.target.value)}
         disabled={loading}
       />
 
@@ -120,7 +120,7 @@ const SignUpForm = () => {
         type="password"
         id="confirmPassword"
         value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
+        onChange={(event) => setConfirmPassword(event.target.value)}
         disabled={loading}
       />
 

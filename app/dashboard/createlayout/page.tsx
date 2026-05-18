@@ -180,7 +180,7 @@ export default function CreateLayoutPage() {
                     <input
                       id="layout-name"
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(event) => setName(event.target.value)}
                       placeholder="Enter layout name"
                       className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
@@ -191,7 +191,7 @@ export default function CreateLayoutPage() {
                     <textarea
                       id="layout-notes"
                       value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
+                      onChange={(event) => setNotes(event.target.value)}
                       placeholder="Enter layout notes"
                       className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 h-20 resize-none"
                     />
@@ -212,7 +212,7 @@ export default function CreateLayoutPage() {
                       min="1"
                       max="50"
                       value={rows}
-                      onChange={(e) => handleRowsChange(Number(e.target.value))}
+                      onChange={(event) => handleRowsChange(Number(event.target.value))}
                       className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                   </div>
@@ -225,7 +225,7 @@ export default function CreateLayoutPage() {
                       min="1"
                       max="50"
                       value={cols}
-                      onChange={(e) => handleColsChange(Number(e.target.value))}
+                      onChange={(event) => handleColsChange(Number(event.target.value))}
                       className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                   </div>
