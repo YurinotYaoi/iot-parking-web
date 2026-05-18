@@ -35,9 +35,9 @@ const getColor = (type: string) => {
 };
 
 export default function Cell({ data, onClick, onRightClick }: Props) {
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onRightClick?.(e);
+  const handleContextMenu = (event: React.MouseEvent) => {
+    event.preventDefault();
+    onRightClick?.(event);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

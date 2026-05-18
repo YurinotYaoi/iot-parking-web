@@ -76,11 +76,11 @@ const SignUpForm = () => {
       setTimeout(() => {
         router.push("/dashboard");
       }, 1000);
-    } catch (err: unknown) {
-      console.error("Registration error:", err);
+    } catch (error: unknown) {
+      console.error("Registration error:", error);
 
-      if (err instanceof Error && "code" in err) {
-        const firebaseErr = err as { code?: string };
+      if (error instanceof Error && "code" in error) {
+        const firebaseErr = error as { code?: string };
         switch (firebaseErr.code) {
           case "auth/email-already-in-use":
             toast.error("This email is already in use.");
@@ -95,7 +95,7 @@ const SignUpForm = () => {
             toast.error("Network error. Please check your connection.");
             break;
           default:
-            toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+            toast.error(error instanceof Error ? error.message : "Something went wrong. Please try again.");
         }
       } else {
         toast.error("An unexpected error occurred. Please try again.");
@@ -112,7 +112,7 @@ const SignUpForm = () => {
         type="email"
         id="email"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(event) => setEmail(event.target.value)}
         disabled={loading}
       />
 
@@ -121,7 +121,7 @@ const SignUpForm = () => {
         type="text"
         id="firstName"
         value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
+        onChange={(event) => setFirstName(event.target.value)}
         disabled={loading}
       />
 
@@ -130,7 +130,7 @@ const SignUpForm = () => {
         type="text"
         id="middleName"
         value={middleName}
-        onChange={(e) => setMiddleName(e.target.value)}
+        onChange={(event) => setMiddleName(event.target.value)}
         disabled={loading}
       />
 
@@ -139,7 +139,7 @@ const SignUpForm = () => {
         type="text"
         id="lastName"
         value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
+        onChange={(event) => setLastName(event.target.value)}
         disabled={loading}
       />
 
@@ -148,7 +148,7 @@ const SignUpForm = () => {
         type="password"
         id="password"
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={(event) => setPassword(event.target.value)}
         disabled={loading}
       />
 
@@ -157,7 +157,7 @@ const SignUpForm = () => {
         type="password"
         id="confirmPassword"
         value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
+        onChange={(event) => setConfirmPassword(event.target.value)}
         disabled={loading}
       />
 

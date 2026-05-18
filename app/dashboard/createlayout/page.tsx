@@ -83,9 +83,9 @@ export default function CreateLayoutPage() {
       
       // Redirect to layout list
       router.push("/dashboard/layout");
-    } catch (err) {
-      console.error("Error saving layout:", err);
-      setError(err instanceof Error ? err.message : "Failed to save layout");
+    } catch (error) {
+      console.error("Error saving layout:", error);
+      setError(error instanceof Error ? error.message : "Failed to save layout");
     } finally {
       setSaving(false);
     }
@@ -165,7 +165,7 @@ export default function CreateLayoutPage() {
                 <input
                   id="layout-name"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(event) => setName(event.target.value)}
                   placeholder="Enter layout name"
                   className="w-full border rounded px-3 py-2"
                 />
@@ -176,7 +176,7 @@ export default function CreateLayoutPage() {
                 <textarea
                   id="layout-notes"
                   value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  onChange={(event) => setNotes(event.target.value)}
                   placeholder="Enter layout notes"
                   className="w-full border rounded px-3 py-2 h-20 resize-none"
                 />
@@ -197,7 +197,7 @@ export default function CreateLayoutPage() {
                   min="1"
                   max="50"
                   value={rows}
-                  onChange={(e) => handleRowsChange(Number(e.target.value))}
+                  onChange={(event) => handleRowsChange(Number(event.target.value))}
                   className="w-full border rounded px-3 py-2"
                 />
               </div>
@@ -210,7 +210,7 @@ export default function CreateLayoutPage() {
                   min="1"
                   max="50"
                   value={cols}
-                  onChange={(e) => handleColsChange(Number(e.target.value))}
+                  onChange={(event) => handleColsChange(Number(event.target.value))}
                   className="w-full border rounded px-3 py-2"
                 />
               </div>

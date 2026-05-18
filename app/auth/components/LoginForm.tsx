@@ -23,8 +23,8 @@ const LoginForm = () => {
     return () => unsub();
   }, []);
 
-  const handleLogin = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
+  const handleLogin = async (event: React.SyntheticEvent) => {
+    event.preventDefault();
 
     if (!email || !password) {
       toast.error("Please fill in all fields.");
@@ -61,11 +61,11 @@ const LoginForm = () => {
       setTimeout(() => {
         router.push("/dashboard");
       }, 1000);
-    } catch (err: unknown) {
-      console.log("LOGIN ERROR:", err);
+    } catch (error: unknown) {
+      console.log("LOGIN ERROR:", error);
 
-      if (err instanceof Error && "code" in err) {
-        const firebaseErr = err as { code?: string };
+      if (error instanceof Error && "code" in error) {
+        const firebaseErr = error as { code?: string };
         switch (firebaseErr.code) {
           case "auth/invalid-credential":
           case "auth/invalid-email":
@@ -78,7 +78,7 @@ const LoginForm = () => {
             toast.error("Too many failed attempts. Please try again later.");
             break;
           default:
-            toast.error(err.message || "Login failed. Please try again.");
+            toast.error(error.message || "Login failed. Please try again.");
         }
       } else {
         toast.error("An unexpected error occurred. Please try again.");
@@ -97,7 +97,7 @@ const LoginForm = () => {
         type="email"
         id="email"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(event) => setEmail(event.target.value)}
         className="dark:text-zinc-50"
         disabled={loading}
       />
@@ -109,7 +109,7 @@ const LoginForm = () => {
         type="password"
         id="password"
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={(event) => setPassword(event.target.value)}
         className="dark:text-zinc-50"
         disabled={loading}
       />

@@ -45,8 +45,8 @@ export default function CreateSensorModal({ onClose }: Props) {
         // only show sensors that are available (not assigned)
         const availableSensors = (data.data || []).filter((s: Sensor) => !s.spotId);
         setSensors(availableSensors);
-      } catch (err) {
-        console.error("Error fetching sensors:", err);
+      } catch (error) {
+        console.error("Error fetching sensors:", error);
       }
     };
     fetchSensors();
@@ -126,8 +126,8 @@ export default function CreateSensorModal({ onClose }: Props) {
 
       alert("Slot created & sensor assigned!");
       onClose();
-    } catch (err: any) {
-      alert(err.message);
+    } catch (error: any) {
+      alert(error.message);
     } finally {
       setLoading(false);
     }
