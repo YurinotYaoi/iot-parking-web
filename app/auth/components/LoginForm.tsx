@@ -22,8 +22,8 @@ const LoginForm = () => {
   return () => unsub();
   }, []);  
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleLogin = async (event: React.FormEvent) => {
+    event.preventDefault()
 
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password);
@@ -73,7 +73,7 @@ const LoginForm = () => {
         type="email"
         id="email"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(event) => setEmail(event.target.value)}
         className=".dark:text-zinc-50"
       />
 
@@ -85,7 +85,7 @@ const LoginForm = () => {
         type="password"
         id="password"
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={(event) => setPassword(event.target.value)}
         className=".dark:text-zinc-50"
       />
 

@@ -13,6 +13,7 @@ import type { UserProfile } from "@/models/user";
 import SensorList from "@/components/SensorList";
 import CreateSensorModal from "@/components/modals/CreateSensorModal";
 import LocationModal from "@/components/modals/LocationModal";
+import { toast } from "sonner";
 
 export default function DashboardScreen() {
     useEffect(() => {
@@ -24,6 +25,7 @@ export default function DashboardScreen() {
   // Logout
   const handleLogout = async () => {
     await signOut(auth);
+    toast.success("Signed out successfully");
     router.push("/");
   };
 
@@ -36,8 +38,8 @@ export default function DashboardScreen() {
       try {
         const data = await getUser(firebaseUser.uid);
         setUser(data);
-      } catch (err) {
-        console.error("Failed to fetch user:", err);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
       }
     });
 
@@ -71,8 +73,8 @@ export default function DashboardScreen() {
         const data = await getUser(auth.currentUser.uid);
         setUser(data);
       }
-    } catch (err) {
-      console.error('Failed to save location:', err);
+    } catch (error) {
+      console.error('Failed to save location:', error);
     }
   };
 
