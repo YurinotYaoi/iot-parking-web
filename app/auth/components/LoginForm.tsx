@@ -3,9 +3,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebaseClient";
-import { toast } from "sonner";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useEffect } from "react";
+import { auth } from "@/lib/configs/firebaseClient";
+import { onAuthStateChanged } from "firebase/auth";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");

@@ -14,15 +14,15 @@ export default function Toolbar({ selectedTool, setSelectedTool }: Props) {
   ];
 
   return (
-    <div className="flex gap-2 mb-4 flex-wrap">
+    <div className="flex gap-1 flex-wrap">
       {tools.map((tool) => (
         <button
           key={tool.value}
           onClick={() => setSelectedTool(tool.value)}
           className={`px-4 py-2 border rounded transition-colors ${
             selectedTool === tool.value 
-              ? "bg-black text-white border-black" 
-              : "bg-white border-gray-300 hover:bg-gray-100"
+              ? "bg-slate-800 text-white border-black " 
+              : "bg-white border-gray-300 hover:bg-gray-100 dark:bg-slate-700 dark:border-slate-600 dark:hover:bg-slate-600 dark:text-slate-100   "
           }`}
         >
           {tool.label}

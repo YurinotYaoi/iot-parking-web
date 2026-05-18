@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { auth } from "@/lib/firebaseClient";
+import { auth } from "@/lib/configs/firebaseClient";
 import { Button } from "@/components/ui/button";
 
 type SensorInfo = {
@@ -236,7 +236,7 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
         </div>
 
         <div className="mt-6 flex flex-col gap-3">
-          <Button className="w-full bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white" onClick={handleSave} disabled={saving}>
+          <Button className="shadow-md active:shadow-inner active:translate-y-px w-full bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 " onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save changes"}
           </Button>
 
