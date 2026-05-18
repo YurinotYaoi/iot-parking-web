@@ -66,9 +66,9 @@ export default function EditLayoutPage() {
         if (data.grid) {
           setInitialGrid(data.grid);
         }
-      } catch (err) {
-        console.error("Error fetching layout:", err);
-        setError(err instanceof Error ? err.message : "Failed to fetch layout");
+      } catch (error) {
+        console.error("Error fetching layout:", error);
+        setError(error instanceof Error ? error.message : "Failed to fetch layout");
       } finally {
         setLoading(false);
       }
@@ -137,9 +137,9 @@ export default function EditLayoutPage() {
 
       alert("Layout updated successfully!");
       router.push("/dashboard/layout");
-    } catch (err) {
-      console.error("Error saving layout:", err);
-      setError(err instanceof Error ? err.message : "Failed to save layout");
+    } catch (error) {
+      console.error("Error saving layout:", error);
+      setError(error instanceof Error ? error.message : "Failed to save layout");
     } finally {
       setSaving(false);
     }

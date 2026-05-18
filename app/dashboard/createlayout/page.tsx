@@ -86,9 +86,9 @@ export default function CreateLayoutPage() {
       
       // Redirect to layout list
       router.push("/dashboard/layout");
-    } catch (err) {
-      console.error("Error saving layout:", err);
-      setError(err instanceof Error ? err.message : "Failed to save layout");
+    } catch (error) {
+      console.error("Error saving layout:", error);
+      setError(error instanceof Error ? error.message : "Failed to save layout");
     } finally {
       setSaving(false);
     }
