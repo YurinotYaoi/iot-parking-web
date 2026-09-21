@@ -5,7 +5,7 @@ import SensorHistory, { HistoryEntry } from "@/components/layout/SensorHistory";
 import { Spinner } from "@/components/Spinner";
 import { auth } from "@/lib/configs/firebaseClient";
 import { useRouter } from "next/navigation";
-import { FaArrowLeft } from "react-icons/fa6";
+import { FaArrowLeft, FaCarSide, FaChartLine, FaClock, FaGaugeHigh } from "react-icons/fa6";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import {
   AUTO_CAPTURE_MS,
@@ -63,6 +63,12 @@ function buildHistoryReport(history: HistoryEntry[]) {
   const peakOccupancy = peak
     ? peak[1].reduce((sum, value) => sum + value, 0) / peak[1].length
     : latestOccupancy;
+  const hourlyProfile = [...hourly.entries()]
+    .map(([hour, values]) => ({
+      hour,
+      occupancy: values.reduce((sum, value) => sum + value, 0) / values.length,
+    }))
+    .sort((a, b) => a.hour - b.hour);
   let trend = "stable";
   if (changePerRecord > 0.02) trend = "rising";
   if (changePerRecord < -0.02) trend = "falling";
@@ -75,6 +81,7 @@ function buildHistoryReport(history: HistoryEntry[]) {
     projectedAvailable: Math.max(0, Math.round(totalSlots * (1 - projectedOccupancy))),
     peakHour: new Date(2020, 0, 1, peakHour).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }),
     peakOccupancy,
+    hourlyProfile,
     trend,
     sampleCount: records.length,
   };
@@ -212,6 +219,11 @@ export default function SensorHistoryScreen() {
   const [secondsLeft, setSecondsLeft] = useState<number>(0);
   const report = buildHistoryReport(history);
 
+  const formatCompactHour = (hour: number) =>
+    new Date(2020, 0, 1, hour)
+      .toLocaleTimeString([], { hour: "numeric" })
+      .replace(" ", "");
+
   useEffect(() => {
     if (!selectedLayoutId) {
       setAiPrediction(null);
@@ -231,10 +243,15 @@ export default function SensorHistoryScreen() {
           { headers: { Authorization: `Bearer ${token}` } },
         );
         const json = await response.json();
+        if (response.status === 422) {
+          setAiPrediction(null);
+          setPredictionError(json?.error || "Not enough sensor history to generate a prediction yet");
+          return;
+        }
         if (!response.ok) throw new Error(json?.error || "Prediction failed");
         setAiPrediction(json.data as AiPrediction);
       } catch (error) {
-        console.error("Load AI parking prediction error:", error);
+        console.error("Unexpected AI parking prediction error:", error);
         setAiPrediction(null);
         setPredictionError(error instanceof Error ? error.message : "Prediction unavailable");
       } finally {
@@ -265,13 +282,13 @@ export default function SensorHistoryScreen() {
   }, [autoCaptureEnabled]);
 
   return (
-    <main className="flex flex-col w-full items-center justify-center">
-      <div className="w-screen max-w-6xl flex flex-col h-full px-4 py-4">
-        <div className="mb-4 flex border-2 border-gray-800 rounded-md p-1 gap-1">
+    <main className="flex min-h-screen flex-col items-center justify-start bg-slate-50/70 dark:bg-slate-950">
+      <div className="flex h-full w-screen max-w-6xl flex-col px-4 py-6">
+        <div className="mb-5 flex gap-2 rounded-xl border border-slate-200 bg-white/80 p-2 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
           <Button
             onClick={() => navigateTo("/dashboard")}
             disabled={isNavigating}
-            className="shadow-md active:shadow-inner active:translate-y-px rounded-sm bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 disabled:opacity-60"
+            className="rounded-lg border border-transparent bg-slate-900 text-white shadow-sm transition hover:bg-white hover:text-slate-900 hover:ring-1 hover:ring-slate-300 active:translate-y-px disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
           >
             {isBackNav ? (
               <span className="inline-flex items-center gap-2">
@@ -288,14 +305,17 @@ export default function SensorHistoryScreen() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <h1 className="text-2xl font-bold">Sensor History</h1>
+          <div className="mb-1">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Sensor history</h1>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Review parking activity and understand demand patterns over time.</p>
+          </div>
 
           {loading ? (
             <div className="text-sm text-gray-500">Loading layouts...</div>
           ) : layouts.length === 0 ? (
             <div className="text-sm text-gray-500">No layouts found for this lot.</div>
           ) : (
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white/80 p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
               <label htmlFor="layout-select" className="text-sm font-medium">
                 Layout
               </label>
@@ -303,7 +323,7 @@ export default function SensorHistoryScreen() {
                 id="layout-select"
                 value={selectedLayoutId}
                 onChange={(e) => setSelectedLayoutId(e.target.value)}
-                className="rounded border border-gray-300 bg-white px-3 py-2 text-sm dark:bg-slate-900 dark:border-slate-700"
+                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-900"
               >
                 {layouts.map((layout) => (
                   <option key={layout.layoutId} value={layout.layoutId}>
@@ -333,8 +353,8 @@ export default function SensorHistoryScreen() {
                 disabled={!selectedLayoutId}
                 className={`shadow-md active:shadow-inner active:translate-y-px rounded-sm border border-transparent disabled:opacity-60 ${
                   autoCaptureEnabled
-                    ? "bg-green-600 text-white hover:bg-green-700 hover:text-white"
-                    : "bg-black text-white hover:bg-white hover:text-black hover:border-black dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800"
+                    ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                    : "bg-slate-900 text-white hover:bg-white hover:text-slate-900 hover:ring-1 hover:ring-slate-300 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
                 }`}
               >
                 {autoCaptureEnabled ? "Auto capture: On" : "Auto capture: Off"}
@@ -343,7 +363,7 @@ export default function SensorHistoryScreen() {
               <Button
                 onClick={createHistorySnapshot}
                 disabled={snapshotSaving || !selectedLayoutId}
-                className="shadow-md active:shadow-inner active:translate-y-px rounded-sm bg-black text-white hover:bg-white hover:text-black hover:border-black border border-transparent dark:bg-white dark:text-black dark:hover:bg-slate-800 dark:hover:text-white dark:hover:border-slate-800 disabled:opacity-60"
+                className="rounded-lg border border-transparent bg-slate-900 text-white shadow-sm transition hover:bg-white hover:text-slate-900 hover:ring-1 hover:ring-slate-300 active:translate-y-px disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
               >
                 {snapshotSaving ? "Creating..." : "Capture now"}
               </Button>
@@ -361,46 +381,125 @@ export default function SensorHistoryScreen() {
           )}
 
           {report && (
-            <section className="border border-gray-200 bg-gray-50 p-4 dark:border-slate-700 dark:bg-slate-900/60">
-              <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+            <section className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-md shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900/80 dark:shadow-none">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-orange-600">Analytical report</p>
-                  <h2 className="text-xl font-bold">Predictive parking demand</h2>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-orange-600">Overview</p>
+                  <h2 className="text-lg font-bold">Parking demand</h2>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Based on {report.sampleCount} snapshots</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{report.sampleCount} snapshots</p>
               </div>
+
+              {predictionLoading && (
+                <div className="mb-4 overflow-hidden rounded border border-orange-200 bg-orange-50 dark:border-orange-900/60 dark:bg-orange-950/20" role="status" aria-live="polite">
+                  <div className="flex items-center gap-3 px-3 py-2">
+                    <Spinner size="sm" label="Preparing your parking forecast" />
+                    <p className="text-sm font-medium text-orange-950 dark:text-orange-100">Preparing forecast...</p>
+                  </div>
+                  <div className="h-1 w-full bg-orange-100 dark:bg-orange-950/40">
+                    <div className="h-full w-1/2 animate-pulse bg-orange-500" />
+                  </div>
+                </div>
+              )}
+
+              {predictionError && !predictionLoading && (
+                <div className="mb-4 rounded border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/20 dark:text-amber-100" role="alert">
+                  <p className="font-medium">Forecast unavailable</p>
+                  <p className="mt-1">{predictionError}</p>
+                </div>
+              )}
 
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="border-l-4 border-orange-500 bg-white p-3 dark:bg-slate-800">
-                  <p className="text-xs text-gray-500">Peak parking hour</p>
+                <div className="min-h-24 rounded-xl border border-orange-100 border-l-4 border-l-orange-500 bg-orange-50/50 p-3 shadow-sm dark:border-orange-900/40 dark:border-l-orange-500 dark:bg-orange-950/20">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-xs text-gray-500">Busiest time</p>
+                    <span className="flex size-7 items-center justify-center rounded-full bg-orange-100 text-orange-600 dark:bg-orange-950/70 dark:text-orange-300"><FaClock aria-hidden="true" /></span>
+                  </div>
                   <p className="mt-1 text-lg font-bold">{report.peakHour}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{(report.peakOccupancy * 100).toFixed(0)}% average occupied</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">{(report.peakOccupancy * 100).toFixed(0)}% usually full</p>
                 </div>
-                <div className="border-l-4 border-red-500 bg-white p-3 dark:bg-slate-800">
-                  <p className="text-xs text-gray-500">AI expected congestion</p>
-                  <p className="mt-1 text-lg font-bold">
-                    {predictionLoading ? "..." : `${((aiPrediction?.predictedOccupancy ?? report.projectedOccupancy) * 100).toFixed(0)}%`}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Random Forest, 30 minutes ahead</p>
-                </div>
-                <div className="border-l-4 border-green-600 bg-white p-3 dark:bg-slate-800">
-                  <p className="text-xs text-gray-500">AI future availability</p>
-                  <p className="mt-1 text-lg font-bold">
-                    {predictionLoading ? "..." : `${aiPrediction?.predictedAvailableSlots ?? report.projectedAvailable} slots`}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Random Forest estimate</p>
-                </div>
-                <div className="border-l-4 border-blue-500 bg-white p-3 dark:bg-slate-800">
-                  <p className="text-xs text-gray-500">Current behavior</p>
+                {!predictionError && (predictionLoading || aiPrediction) && (
+                  <>
+                    <div className="min-h-24 rounded-xl border border-red-100 border-l-4 border-l-red-500 bg-red-50/50 p-3 shadow-sm dark:border-red-900/40 dark:border-l-red-500 dark:bg-red-950/20">
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-xs text-gray-500">Expected occupancy</p>
+                        <span className="flex size-7 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-950/70 dark:text-red-300"><FaGaugeHigh aria-hidden="true" /></span>
+                      </div>
+                      <div className="mt-1 text-lg font-bold">
+                        {predictionLoading ? (
+                          <span className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-300">
+                            <Spinner size="sm" label="Loading expected occupancy" />
+                            Loading
+                          </span>
+                        ) : `${((aiPrediction?.predictedOccupancy ?? 0) * 100).toFixed(0)}%`}
+                      </div>
+                      <p className="text-xs text-gray-600 dark:text-gray-300">In 30 minutes</p>
+                    </div>
+                    <div className="min-h-24 rounded-xl border border-emerald-100 border-l-4 border-l-emerald-600 bg-emerald-50/50 p-3 shadow-sm dark:border-emerald-900/40 dark:border-l-emerald-500 dark:bg-emerald-950/20">
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-xs text-gray-500">Expected spaces available</p>
+                        <span className="flex size-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950/70 dark:text-emerald-300"><FaCarSide aria-hidden="true" /></span>
+                      </div>
+                      <div className="mt-1 text-lg font-bold">
+                        {predictionLoading ? (
+                          <span className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-300">
+                            <Spinner size="sm" label="Loading available spaces" />
+                            Loading
+                          </span>
+                        ) : `${aiPrediction?.predictedAvailableSlots ?? 0} slots`}
+                      </div>
+                      <p className="text-xs text-gray-600 dark:text-gray-300">In 30 minutes</p>
+                    </div>
+                  </>
+                )}
+                <div className="min-h-24 rounded-xl border border-blue-100 border-l-4 border-l-blue-500 bg-blue-50/50 p-3 shadow-sm dark:border-blue-900/40 dark:border-l-blue-500 dark:bg-blue-950/20">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-xs text-gray-500">Recent demand</p>
+                    <span className="flex size-7 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-950/70 dark:text-blue-300"><FaChartLine aria-hidden="true" /></span>
+                  </div>
                   <p className="mt-1 text-lg font-bold capitalize">{report.trend} demand</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{report.latestAvailable} slots available now</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">{report.latestAvailable} spaces now</p>
                 </div>
               </div>
 
-              <div className="mt-4 border-t border-gray-200 pt-3 text-sm text-gray-700 dark:border-slate-700 dark:text-gray-300">
-                <span className="font-semibold">Behavior analysis:</span> Demand is {report.trend} across the latest observations, with the busiest recurring hour at {report.peakHour}.
-                <span className="ml-1 text-gray-500">{aiPrediction ? `The Random Forest trained on ${aiPrediction.trainingRecords} records and returned MAE ${(aiPrediction.metrics.mae * 100).toFixed(1)} percentage points.` : "The AI forecast is loading from the Python model."}</span>
-                {predictionError && <span className="ml-1 text-red-600">{predictionError}</span>}
+              <div className="mt-3 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-950/50">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-600 dark:bg-orange-950/70 dark:text-orange-300"><FaChartLine aria-hidden="true" /></span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Forecast signal</p>
+                  <p className="truncate text-sm font-semibold capitalize text-slate-800 dark:text-slate-100">Demand is {report.trend}</p>
+                </div>
+                <div className="h-2 w-24 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800" aria-label={`Current demand is ${report.trend}`}>
+                  <div className={`h-full rounded-full transition-all ${report.trend === "rising" ? "w-4/5 bg-orange-500" : report.trend === "falling" ? "w-2/5 bg-blue-500" : "w-3/5 bg-emerald-500"}`} />
+                </div>
+              </div>
+
+              <div className="mt-4 border-t border-gray-200 pt-3 dark:border-slate-700">
+                <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950/50">
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <h3 className="font-semibold">Occupancy by hour</h3>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">0-100%</span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <div className="flex h-40 min-w-[28rem] items-end gap-1 border-b border-l border-gray-300 px-2 pb-1 dark:border-slate-600" role="img" aria-label="Typical occupancy by hour">
+                      {report.hourlyProfile.map(({ hour, occupancy }) => (
+                        <div key={hour} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1" title={`${formatCompactHour(hour)}: ${(occupancy * 100).toFixed(0)}% occupied`}>
+                          <div
+                            className="w-full max-w-8 rounded-t bg-orange-500 transition-all"
+                            style={{ height: `${Math.max(8, occupancy * 100)}%` }}
+                          />
+                          <span className="whitespace-nowrap text-center text-[10px] text-gray-500">{formatCompactHour(hour)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+              </div>
+                  </div>
+
+              <div className="mt-3 border-t border-gray-200 pt-3 text-sm text-gray-700 dark:border-slate-700 dark:text-gray-300">
+                <span className="font-semibold">Summary:</span> Demand is {report.trend}; busiest around {report.peakHour}.
+                {!predictionError && (
+                  <span className="ml-1 text-gray-500">{aiPrediction ? `Forecast uses ${aiPrediction.trainingRecords} recent records.` : "Forecast is being prepared."}</span>
+                )}
               </div>
             </section>
           )}

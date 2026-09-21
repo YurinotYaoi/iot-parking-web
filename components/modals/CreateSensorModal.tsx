@@ -27,7 +27,7 @@ type FormErrors = {
 export default function CreateSensorModal({ onClose }: Props) {
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [slotName, setSlotName] = useState("");
-  const [vehicleType, setVehicleType] = useState("");
+  const [vehicleType, setVehicleType] = useState("any");
   const [selectedSensor, setSelectedSensor] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -146,8 +146,10 @@ export default function CreateSensorModal({ onClose }: Props) {
 
       toast.success("Slot created & sensor assigned!");
       onClose();
-    } catch (error: any) {
-      setErrors({ form: error.message || "Something went wrong. Please try again." });
+    } catch (error: unknown) {
+      setErrors({
+        form: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -188,13 +190,19 @@ export default function CreateSensorModal({ onClose }: Props) {
 
         <div className="mb-2">
           <label htmlFor="vehicle-type" className="block mb-1 text-sm text-slate-700 dark:text-slate-200">Vehicle Type</label>
-          <input
+          <select
             id="vehicle-type"
             className={`w-full border p-2 rounded text-slate-900 outline-none transition bg-white dark:bg-slate-800 dark:text-slate-100 ${errors.vehicleType ? "border-destructive" : "border-slate-300 focus:border-slate-500 dark:border-slate-700"}`}
             value={vehicleType}
             aria-invalid={!!errors.vehicleType}
             onChange={(event) => { setVehicleType(event.target.value); clearFieldError("vehicleType"); }}
-          />
+          >
+            <option value="any">Any vehicle</option>
+            <option value="sedan">Sedan</option>
+            <option value="motorcycle">Motorcycle</option>
+            <option value="van">Van</option>
+            <option value="truck">Truck</option>
+          </select>
           {errors.vehicleType && (
             <p className="mt-1 flex items-center gap-1.5 text-sm text-destructive">
               <span aria-hidden="true">⚠</span> {errors.vehicleType}

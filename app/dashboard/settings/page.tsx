@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { FaArrowLeft } from "react-icons/fa6";
 
 export default function SettingsPage() {
 
@@ -139,8 +140,17 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">      
-      <div className="w-full max-w-md">
+    <main className="flex min-h-screen flex-col items-center justify-start bg-slate-50/70 dark:bg-slate-950">
+      <div className="flex w-screen max-w-6xl flex-col px-4 py-6">
+        <div className="w-full max-w-md">
+        <button
+          type="button"
+          onClick={() => router.push('/dashboard')}
+          className="mb-4 inline-flex items-center rounded-lg border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-white hover:text-slate-900   hover:ring-1 hover:ring-slate-300 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
+        >
+          <FaArrowLeft className="mr-2" />
+          Back
+        </button>
         <form onSubmit={handleSubmit}>
           {errors.form && (
             <p className="mb-4 flex items-center gap-1.5 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -239,20 +249,21 @@ export default function SettingsPage() {
           <div className="flex items-center justify-end">
             <button
               type="submit"
-              className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="ml-3 inline-flex justify-center rounded-lg border border-transparent bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-white hover:text-slate-900 hover:ring-1 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
             >
               Save
             </button>
             <button
               type="button"
-              className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-white py-2 px-4 text-sm font-medium text-indigo-600 shadow-sm hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="ml-3 inline-flex justify-center rounded-lg border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
               onClick={() => router.push('/dashboard')}
             >
               Cancel
             </button>
           </div>
         </form>
+        </div>
       </div>
-    </div>
+    </main>
   );
 } 

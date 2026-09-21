@@ -48,6 +48,7 @@ type FormErrors = {
 const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
   const [slotName, setSlotName] = useState("");
   const [vehicleType, setVehicleType] = useState("any");
+  const [isReserved, setIsReserved] = useState(false);
   const [rowNo, setRowNo] = useState("");
   const [columnNo, setColumnNo] = useState("");
   const [floor, setFloor] = useState("");
@@ -62,6 +63,7 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
     if (!spot) return;
     setSlotName(spot.slotName || "");
     setVehicleType(spot.vehicleType || "any");
+    setIsReserved(spot.status === "reserved");
     setRowNo(spot.rowNo || "");
     setColumnNo(spot.columnNo || "");
     setFloor(spot.floor || "");
@@ -97,6 +99,7 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
         body: JSON.stringify({
           slotName,
           vehicleType,
+          status: isReserved ? "reserved" : "available",
         }),
       });
 
@@ -105,8 +108,8 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
 
       toast.success("Slot saved successfully!");
       onSaved();
-    } catch (error: any) {
-      setErrors({ form: error.message || "Unable to save slot" });
+    } catch (error: unknown) {
+      setErrors({ form: error instanceof Error ? error.message : "Unable to save slot" });
     } finally {
       setSaving(false);
     }
@@ -149,8 +152,8 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
       toast.success("Slot deleted successfully!");
       onSaved();
       onClose();
-    } catch (error: any) {
-      toast.error(error.message || "Unable to delete spot");
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "Unable to delete spot");
     } finally {
       setDeleting(false);
     }
@@ -197,19 +200,55 @@ const EditSpotModal = ({ spot, onClose, onSaved }: Props) => {
             <label htmlFor="vehicle-type" className="block text-sm font-medium text-slate-900 dark:text-slate-100">
               Vehicle Type
             </label>
-            <input
+            <select
               id="vehicle-type"
               className={`w-full rounded-md border p-2 text-sm text-slate-900 shadow-sm outline-none transition dark:bg-slate-800 dark:text-slate-100 ${errors.vehicleType ? "border-destructive" : "border-slate-300 focus:border-slate-500 dark:border-slate-700"}`}
               value={vehicleType}
               aria-invalid={!!errors.vehicleType}
               onChange={(event) => { setVehicleType(event.target.value); clearFieldError("vehicleType"); }}
-            />
+            >
+              <option value="any">Any vehicle</option>
+              <option value="sedan">Sedan</option>
+              <option value="motorcycle">Motorcycle</option>
+              <option value="van">Van</option>
+              <option value="truck">Truck</option>
+            </select>
             {errors.vehicleType && (
               <p className="mt-1 flex items-center gap-1.5 text-sm text-destructive">
                 <span aria-hidden="true">⚠</span> {errors.vehicleType}
               </p>
             )}
           </div>
+
+          <fieldset className="space-y-2">
+            <legend className="block text-sm font-medium text-slate-900 dark:text-slate-100">Reservation</legend>
+            <div className="grid grid-cols-2 gap-2 rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
+              <button
+                type="button"
+                onClick={() => setIsReserved(false)}
+                aria-pressed={!isReserved}
+                className={`rounded-md px-3 py-2 text-sm font-medium transition ${
+                  !isReserved
+                    ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
+                    : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                }`}
+              >
+                Not reserved
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsReserved(true)}
+                aria-pressed={isReserved}
+                className={`rounded-md px-3 py-2 text-sm font-medium transition ${
+                  isReserved
+                    ? "bg-amber-400 text-amber-950 shadow-sm"
+                    : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                }`}
+              >
+                Reserved
+              </button>
+            </div>
+          </fieldset>
 
           <div className="grid grid-cols-3 gap-3 text-sm text-slate-700 dark:text-slate-300">
             <div className="rounded-md border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800">

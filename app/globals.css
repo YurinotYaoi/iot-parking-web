@@ -4,6 +4,28 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@keyframes navbar-car-drive {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  45% {
+    transform: translateX(4px) rotate(-2deg);
+  }
+  60% {
+    transform: translateX(6px) rotate(0deg);
+  }
+}
+
+.navbar-car-drive {
+  animation: navbar-car-drive 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar-car-drive {
+    animation: none;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
