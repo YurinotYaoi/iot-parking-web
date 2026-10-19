@@ -9,6 +9,9 @@ export interface SpotData {
   floor: string;
   vehicleType?: string;
   status: string;
+  forcedOccupied?: boolean;
+  isDraft?: boolean;
+  pendingSensorId?: string;
   ownerId?: string;
   layoutId?: string;
   lotId?: string;
@@ -41,4 +44,3 @@ export interface LayoutData {
   createdAt?: number;
   updatedAt?: number;
 }
-

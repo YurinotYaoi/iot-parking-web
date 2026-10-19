@@ -33,7 +33,7 @@ export default function Toolbar({ selectedTool, setSelectedTool }: Props) {
       
       {selectedTool === null && (
         <div className="text-sm text-gray-500 self-center">
-          Select a tool (right-click to clear cells)
+          Select a tool, or right-click a cell to change it
         </div>
       )}
     </div>

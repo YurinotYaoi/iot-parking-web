@@ -3,6 +3,7 @@ import { onValue, ref } from "firebase/database";
 import { rtdb } from "@/lib/configs/firebaseClient";
 
 export type SensorData = {
+  sensorId?: string;
   spotId?: string;
   status?: string;
   distance?: number;
@@ -25,9 +26,9 @@ export function useSensorMap() {
         const result: SensorMap = {};
         if (snapshot.exists()) {
           const data = snapshot.val() as Record<string, SensorData | null>;
-          for (const sensor of Object.values(data)) {
+          for (const [sensorId, sensor] of Object.entries(data)) {
             if (sensor && sensor.spotId) {
-              result[sensor.spotId] = sensor;
+              result[sensor.spotId] = { ...sensor, sensorId };
             }
           }
         }

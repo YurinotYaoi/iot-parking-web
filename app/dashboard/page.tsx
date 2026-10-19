@@ -341,6 +341,7 @@ export default function DashboardScreen() {
                       layoutName={selectedLayout.layoutName}
                       grid={selectedLayout.grid}
                       liveSpots={liveSpots.filter((spot) => spot.layoutId === selectedLayout.layoutId)}
+                      onEdit={() => router.push(`/dashboard/editlayout?id=${selectedLayout.layoutId}`)}
                     />
                   ) : null;
                 })()

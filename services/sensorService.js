@@ -82,7 +82,7 @@ export async function handleSensorPing(sensorId, { isOccupied }) {
   await db.ref(`sensors/${sensorId}`).update({ status: 'online', lastPingAt: now });
 
   const spotStatus = isOccupied ? 'occupied' : 'available';
-  await updateSpotStatus(sensor.spotId, spotStatus);
+  const updatedSpot = await updateSpotStatus(sensor.spotId, spotStatus);
 
-  return { sensorId, spotId: sensor.spotId, spotStatus, lastPingAt: now };
+  return { sensorId, spotId: sensor.spotId, spotStatus: updatedSpot.status, lastPingAt: now };
 }

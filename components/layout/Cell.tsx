@@ -1,24 +1,38 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { CellData } from "@/models/layout";
 
 interface Props {
   readonly data: CellData;
+  readonly row: number;
+  readonly column: number;
   readonly liveStatus?: string;
   readonly onClick: () => void;
-  readonly onRightClick?: (event: React.MouseEvent) => void;
+  readonly onRightClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const getCellContent = (
   type: string,
   spotData: CellData["spotData"],
-  status: string | undefined
+  status: string | undefined,
+  forcedOccupied: boolean,
 ) => {
   if (type === "slot" && spotData) {
     const display = status ?? "—";
     return (
       <>
-        <div className="font-bold text-white">{spotData.slotName}</div>
+        <div className="flex max-w-full items-center gap-1">
+          <span className="truncate font-bold text-white">{spotData.slotName}</span>
+          {forcedOccupied && (
+            <span
+              className="shrink-0 rounded bg-white/90 px-1 py-0.5 text-[8px] font-extrabold leading-none text-red-700"
+              title="Occupied by admin override"
+            >
+              FORCED
+            </span>
+          )}
+        </div>
         <div className="text-white text-[10px]">{display}</div>
       </>
     );
@@ -26,7 +40,7 @@ const getCellContent = (
   if (type === "road") {
     return <div className="text-white font-bold">ROAD</div>;
   }
-  return <div className="text-gray-500 text-xs">empty</div>;
+  return <Plus aria-hidden="true" className="size-4 text-slate-500" />;
 };
 
 const getColor = (type: string, status: string | undefined) => {
@@ -40,15 +54,17 @@ const getColor = (type: string, status: string | undefined) => {
   return "bg-green-100 hover:bg-green-200";
 };
 
-export default function Cell({ data, liveStatus, onClick, onRightClick }: Props) {
+export default function Cell({ data, row, column, liveStatus, onClick, onRightClick }: Props) {
   const status =
-    liveStatus === "occupied"
+    data.spotData?.forcedOccupied
+      ? "occupied"
+      : liveStatus === "occupied"
       ? "occupied"
       : data.spotData?.status === "reserved"
         ? "reserved"
       : liveStatus ?? data.spotData?.status;
 
-  const handleContextMenu = (event: React.MouseEvent) => {
+  const handleContextMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     onRightClick?.(event);
   };
@@ -83,9 +99,13 @@ export default function Cell({ data, liveStatus, onClick, onRightClick }: Props)
         rounded
         ${getColor(data.type, status)}
       `}
-      aria-label={`Cell: ${data.type}${status ? `, ${status}` : ""}`}
+      aria-label={
+        data.type === "empty"
+          ? `Empty cell at row ${row + 1}, column ${column + 1}; click to add an available slot`
+          : `Cell at row ${row + 1}, column ${column + 1}: ${data.type}${status ? `, ${status}` : ""}${data.spotData?.forcedOccupied ? ", force occupied override active" : ""}`
+      }
     >
-      {getCellContent(data.type, data.spotData, status)}
+      {getCellContent(data.type, data.spotData, status, !!data.spotData?.forcedOccupied)}
     </button>
   );
 }

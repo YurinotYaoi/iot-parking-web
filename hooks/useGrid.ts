@@ -19,7 +19,22 @@ export const useGrid = (rows: number, cols: number, initialGrid?: GridType) => {
   }, [initialGrid]);
 
   const resizeGrid = (newRows: number, newCols: number) => {
-    setGrid(createGrid(newRows, newCols));
+    setGrid((currentGrid) =>
+      Array.from({ length: newRows }, (_, rowIndex) =>
+        Array.from({ length: newCols }, (_, colIndex) => {
+          const cell = currentGrid[rowIndex]?.[colIndex] ?? { type: "empty" as CellType };
+          if (cell.type !== "slot" || !cell.spotData) return cell;
+          return {
+            ...cell,
+            spotData: {
+              ...cell.spotData,
+              rowNo: String(rowIndex + 1),
+              columnNo: String(colIndex + 1),
+            },
+          };
+        })
+      )
+    );
   };
 
   const updateCell = (row: number, col: number, type: CellType, spotData?: SpotData) => {
@@ -52,7 +67,11 @@ export const useGrid = (rows: number, cols: number, initialGrid?: GridType) => {
       newGrid[row][col] = {
         type: "slot",
         spotId: spotData.slotId,
-        spotData,
+        spotData: {
+          ...spotData,
+          rowNo: String(row + 1),
+          columnNo: String(col + 1),
+        },
       };
 
       return newGrid;
@@ -77,7 +96,25 @@ export const useGrid = (rows: number, cols: number, initialGrid?: GridType) => {
 
       newGrid[row][col] = {
         ...cell,
-        spotData: { ...cell.spotData, status },
+        spotData: { ...cell.spotData, status, forcedOccupied: false },
+      };
+      return newGrid;
+    });
+  };
+
+  const updateSpotDetails = (
+    row: number,
+    col: number,
+    details: Partial<Pick<SpotData, "slotName" | "vehicleType" | "forcedOccupied" | "pendingSensorId">>
+  ) => {
+    setGrid((prev) => {
+      const newGrid = prev.map((r) => [...r]);
+      const cell = newGrid[row]?.[col];
+      if (!cell || cell.type !== "slot" || !cell.spotData) return prev;
+
+      newGrid[row][col] = {
+        ...cell,
+        spotData: { ...cell.spotData, ...details },
       };
       return newGrid;
     });
@@ -95,5 +132,5 @@ export const useGrid = (rows: number, cols: number, initialGrid?: GridType) => {
     return placedSpotIds;
   };
 
-  return { grid, updateCell, updateCellStatus, resizeGrid, clearCell, getPlacedSpots };
+  return { grid, updateCell, updateCellStatus, updateSpotDetails, resizeGrid, clearCell, getPlacedSpots };
 };

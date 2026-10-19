@@ -1,6 +1,8 @@
 "use client";
 
 import { FaBicycle, FaCar, FaCarSide, FaLock, FaMotorcycle, FaVanShuttle } from "react-icons/fa6";
+import { Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { GridType } from "@/models/layout";
 import { useRef, useState } from "react";
 
@@ -8,6 +10,7 @@ type LayoutPreviewProps = {
   readonly layoutName: string;
   readonly grid: GridType;
   readonly liveSpots?: LiveSpot[];
+  readonly onEdit?: () => void;
 };
 
 type LiveSpot = {
@@ -15,6 +18,7 @@ type LiveSpot = {
   slotName?: string;
   vehicleType?: string;
   status?: string;
+  forcedOccupied?: boolean;
   sensor?: {
     status?: string;
   } | null;
@@ -60,7 +64,7 @@ function getVehicleIcon(cell: GridType[number][number], status?: string) {
   return <FaCar aria-label="Any vehicle" />;
 }
 
-export default function LayoutPreview({ layoutName, grid, liveSpots = [] }: LayoutPreviewProps) {
+export default function LayoutPreview({ layoutName, grid, liveSpots = [], onEdit }: LayoutPreviewProps) {
   const rows = grid.length;
   const columns = grid[0]?.length || 1;
   const liveSpotsById = new Map(liveSpots.map((spot) => [spot.slotId, spot]));
@@ -100,7 +104,20 @@ export default function LayoutPreview({ layoutName, grid, liveSpots = [] }: Layo
 
   return (
     <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-2 dark:border-slate-700 dark:bg-slate-950/50">
-    
+      {onEdit && (
+        <div className="mb-1 flex justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            size="xs"
+            onClick={onEdit}
+            aria-label={`Edit ${layoutName}`}
+          >
+            <Pencil aria-hidden="true" />
+            Edit
+          </Button>
+        </div>
+      )}
 
       <div
         ref={viewportRef}
@@ -134,7 +151,9 @@ export default function LayoutPreview({ layoutName, grid, liveSpots = [] }: Layo
                     },
                   }
                 : cell;
-              const status = liveSpot?.status === "reserved"
+              const status = liveSpot?.forcedOccupied || displayCell.spotData?.forcedOccupied
+                ? "occupied"
+                : liveSpot?.status === "reserved"
                 ? "reserved"
                 : liveSpot?.sensor?.status || liveSpot?.status || displayCell.spotData?.status;
               return (
@@ -147,6 +166,14 @@ export default function LayoutPreview({ layoutName, grid, liveSpots = [] }: Layo
                     <span className="flex min-w-0 items-center gap-1">
                       <span className="shrink-0 text-[11px]">{getVehicleIcon(displayCell, status)}</span>
                       <span className="truncate">{getCellLabel(displayCell)}</span>
+                      {(liveSpot?.forcedOccupied || displayCell.spotData?.forcedOccupied) && (
+                        <span
+                          title="Occupied by admin override"
+                          className="shrink-0 rounded bg-white/90 px-1 py-0.5 text-[8px] font-extrabold leading-none text-red-700"
+                        >
+                          FORCED
+                        </span>
+                      )}
                     </span>
                   ) : (
                     <span className="truncate">{getCellLabel(cell)}</span>

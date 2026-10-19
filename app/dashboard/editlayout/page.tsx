@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Grid from "@/components/layout/Grid";
+import Grid, { type GridAction } from "@/components/layout/Grid";
 import Toolbar from "@/components/layout/Toolbar";
-import AvailableSpots from "@/components/layout/AvailableSpots";
+import AvailableSensors, { type AvailableSensor } from "@/components/layout/AvailableSensors";
 import { useGrid } from "@/hooks/useGrid";
-import { LayoutTool, SpotData, GridType } from "@/models/layout";
+import { LayoutTool, GridType } from "@/models/layout";
 import { getLayoutById, updateLayout } from "@/services/layoutService";
 import { auth } from "@/lib/configs/firebaseClient";
 import { useSensorMap } from "@/hooks/useSensorMap";
@@ -15,6 +15,14 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/Skeleton";
 import { Spinner } from "@/components/Spinner";
 import SensorSimulate from "@/components/layout/SensorSimulate";
+import {
+  createGridSpotDraft,
+  assignSensorToGridSpot,
+  removeSensorFromGridSpot,
+  setGridSpotForceOccupied,
+  updateGridSpotDetails,
+  updateGridSpotStatus,
+} from "@/services/layoutGridService";
 
 export default function EditLayoutPage() {
   useEffect(() => {
@@ -26,26 +34,32 @@ export default function EditLayoutPage() {
 
   const [rows, setRows] = useState(5);
   const [cols, setCols] = useState(8);
+  const [rowsInput, setRowsInput] = useState("5");
+  const [colsInput, setColsInput] = useState("8");
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
   const [initialGrid, setInitialGrid] = useState<GridType | null>(null);
 
-  const { grid, updateCell, updateCellStatus, resizeGrid, clearCell, getPlacedSpots } = useGrid(
-    rows,
-    cols,
-    initialGrid || undefined
-  );
+  const {
+    grid,
+    updateCell,
+    updateCellStatus,
+    updateSpotDetails,
+    resizeGrid,
+    clearCell,
+  } = useGrid(rows, cols, initialGrid || undefined);
 
   const [selectedTool, setSelectedTool] = useState<LayoutTool | null>(null);
-  const [selectedSpot, setSelectedSpot] = useState<SpotData | null>(null);
+  const [selectedSensor, setSelectedSensor] = useState<AvailableSensor | null>(null);
   const [saving, setSaving] = useState(false);
   const [spotsRefreshKey, setSpotsRefreshKey] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nameError, setNameError] = useState<string | null>(null);
   const { sensorMap } = useSensorMap();
-
-  const placedSpots = getPlacedSpots();
+  const pendingSensorIds = grid.flatMap((row) =>
+    row.flatMap((cell) => cell.spotData?.pendingSensorId || [])
+  );
 
   // Fetch layout data
   useEffect(() => {
@@ -68,6 +82,8 @@ export default function EditLayoutPage() {
         const colCount = data.totalColumns || 8;
         setRows(rowCount);
         setCols(colCount);
+        setRowsInput(String(rowCount));
+        setColsInput(String(colCount));
 
         if (data.grid) {
           setInitialGrid(data.grid);
@@ -83,66 +99,167 @@ export default function EditLayoutPage() {
     fetchLayout();
   }, [layoutId]);
 
-  const handleRowsChange = (value: number) => {
-    if (value > 0) {
+  const handleRowsChange = () => {
+    const value = Number(rowsInput);
+    if (Number.isInteger(value) && value > 0 && value <= 50) {
       setRows(value);
+      setRowsInput(String(value));
       resizeGrid(value, cols);
+    } else {
+      setRowsInput(String(rows));
     }
   };
 
-  const handleColsChange = (value: number) => {
-    if (value > 0) {
+  const handleColsChange = () => {
+    const value = Number(colsInput);
+    if (Number.isInteger(value) && value > 0 && value <= 50) {
       setCols(value);
+      setColsInput(String(value));
       resizeGrid(rows, value);
+    } else {
+      setColsInput(String(cols));
     }
   };
 
-  const handleSelectSpot = (spot: SpotData) => {
-    setSelectedSpot(spot);
+  const handleSelectSensor = (sensor: AvailableSensor) => {
+    setSelectedSensor(sensor);
     setSelectedTool(null);
   };
 
-  const handleGridCellClick = (rowIndex: number, colIndex: number) => {
-    if (selectedSpot) {
-      updateCell(rowIndex, colIndex, "slot", selectedSpot);
-      setSelectedSpot(null);
-    } else if (selectedTool === "available" || selectedTool === "reserved") {
-      void updateCellStatusInFirebase(rowIndex, colIndex, selectedTool);
-    } else if (selectedTool) {
-      updateCell(rowIndex, colIndex, selectedTool);
-    }
-  };
-
-  const updateCellStatusInFirebase = async (
-    rowIndex: number,
-    colIndex: number,
-    status: "available" | "reserved"
-  ) => {
+  const handleGridCellAction = async (rowIndex: number, colIndex: number, action: GridAction) => {
     const cell = grid[rowIndex]?.[colIndex];
-    if (cell?.type !== "slot" || !cell.spotId) {
-      toast.error("Select a placed parking slot to change its status.");
+
+    if (action === "sensorless") {
+      if (cell?.spotData?.isDraft && cell.spotData.pendingSensorId) {
+        updateSpotDetails(rowIndex, colIndex, { pendingSensorId: undefined });
+        toast.success("Sensor assignment removed from draft slot.");
+        return;
+      }
+      const sensorId = cell?.spotId ? sensorMap[cell.spotId]?.sensorId : undefined;
+      if (!sensorId) {
+        toast.info("This slot has no sensor assigned.");
+        return;
+      }
+      try {
+        await removeSensorFromGridSpot(sensorId);
+        setSpotsRefreshKey((current) => current + 1);
+        toast.success("Sensor removed from slot.");
+      } catch (error) {
+        console.error("Failed to remove sensor from slot:", error);
+        const message = error instanceof Error ? error.message : "Failed to remove sensor from slot";
+        setError(message);
+        toast.error(message);
+      }
       return;
     }
 
-    const user = auth.currentUser;
-    if (!user) {
-      setError("Not authenticated");
+    if (action === "forceOccupied" || action === "clearForceOccupied") {
+      if (!cell?.spotId || cell.spotData?.isDraft || !sensorMap[cell.spotId]?.sensorId) {
+        toast.error("Force occupied is only available for slots with an assigned sensor.");
+        return;
+      }
+      const forced = action === "forceOccupied";
+      try {
+        await setGridSpotForceOccupied(cell.spotId, forced);
+        updateCellStatus(rowIndex, colIndex, forced ? "occupied" : "available");
+        updateSpotDetails(rowIndex, colIndex, { forcedOccupied: forced });
+        toast.success(forced ? "Slot forced occupied." : "Force occupied cleared.");
+      } catch (error) {
+        console.error("Failed to update force occupied override:", error);
+        const message = error instanceof Error ? error.message : "Failed to update force occupied override";
+        setError(message);
+        toast.error(message);
+      }
+      return;
+    }
+
+    if (action === "empty") {
+      clearCell(rowIndex, colIndex);
+      return;
+    }
+
+    if (action === "road") {
+      updateCell(rowIndex, colIndex, "road");
       return;
     }
 
     try {
-      const token = await user.getIdToken();
-      const response = await fetch(`/api/spots/${cell.spotId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ status }),
-      });
-      if (!response.ok) throw new Error(`Failed to set slot ${status}`);
-      updateCellStatus(rowIndex, colIndex, status);
-      setSpotsRefreshKey((current) => current + 1);
-      toast.success(`${cell.spotData?.slotName || "Slot"} marked ${status}`);
+      if (cell?.type === "slot" && cell.spotId) {
+        if (cell.spotData?.isDraft) {
+          updateCellStatus(rowIndex, colIndex, action);
+          return;
+        }
+        await updateGridSpotStatus(cell.spotId, action);
+        updateCellStatus(rowIndex, colIndex, action);
+        toast.success(`${cell.spotData?.slotName || "Slot"} marked ${action}`);
+      } else {
+        const spot = createGridSpotDraft(rowIndex, colIndex, action, layoutId || undefined);
+        updateCell(rowIndex, colIndex, "slot", spot);
+        toast.success(`${spot.slotName} added as ${action}`);
+      }
     } catch (error) {
-      setError(error instanceof Error ? error.message : `Failed to set slot ${status}`);
+      console.error("Failed to update parking grid:", error);
+      const message = error instanceof Error ? error.message : "Failed to update parking grid";
+      setError(message);
+      toast.error(message);
+    }
+  };
+
+  const handleGridCellClick = (rowIndex: number, colIndex: number) => {
+    if (selectedSensor) {
+      const cell = grid[rowIndex]?.[colIndex];
+      if (cell?.type !== "slot" || !cell.spotId) {
+        toast.error("Select a parking slot to assign this sensor.");
+        return;
+      }
+      if (cell.spotData?.isDraft) {
+        updateSpotDetails(rowIndex, colIndex, { pendingSensorId: selectedSensor.sensorId });
+        setSelectedSensor(null);
+        toast.success(`${selectedSensor.deviceId} will be assigned when the layout is saved.`);
+        return;
+      }
+      void assignSensorToGridSpot(selectedSensor.sensorId, cell.spotId)
+        .then(() => {
+          setSelectedSensor(null);
+          setSpotsRefreshKey((current) => current + 1);
+          toast.success(`${selectedSensor.deviceId} assigned to ${cell.spotData?.slotName || "slot"}.`);
+        })
+        .catch((error: unknown) => {
+          console.error("Failed to assign sensor to slot:", error);
+          const message = error instanceof Error ? error.message : "Failed to assign sensor";
+          setError(message);
+          toast.error(message);
+        });
+    } else if (selectedTool && selectedTool !== "slot") {
+      void handleGridCellAction(rowIndex, colIndex, selectedTool);
+    } else if (grid[rowIndex]?.[colIndex]?.type === "empty") {
+      void handleGridCellAction(rowIndex, colIndex, "available");
+    }
+  };
+
+  const handleSpotDetailsChange = async (
+    rowIndex: number,
+    colIndex: number,
+    details: { slotName: string; vehicleType: string },
+  ) => {
+    const cell = grid[rowIndex]?.[colIndex];
+    if (!cell?.spotId) return;
+
+    try {
+      if (cell.spotData?.isDraft) {
+        updateSpotDetails(rowIndex, colIndex, details);
+        toast.success("Draft slot details saved.");
+        return;
+      }
+      await updateGridSpotDetails(cell.spotId, details);
+      updateSpotDetails(rowIndex, colIndex, details);
+      setSpotsRefreshKey((current) => current + 1);
+      toast.success("Slot details saved.");
+    } catch (error) {
+      console.error("Failed to update slot details:", error);
+      const message = error instanceof Error ? error.message : "Failed to update slot details";
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -322,19 +439,29 @@ export default function EditLayoutPage() {
           <div className="flex gap-6 flex-1 overflow-hidden ">
             {/* LEFT - GRID AREA - TOOLBAR AND GRID */}
             <div className="flex-1 flex flex-col gap-4 overflow-hidden border-2 border-gray-800 rounded-md p-2">
-              <Toolbar selectedTool={selectedTool} setSelectedTool={setSelectedTool} />
+              <Toolbar
+                selectedTool={selectedTool}
+                setSelectedTool={(tool) => {
+                  setSelectedTool(tool);
+                  setSelectedSensor(null);
+                }}
+              />
               <div className="flex flex-col gap-2">
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  {selectedSpot ? `Selected Spot: ${selectedSpot.slotName}` : "Select a tool or spot to place on grid"}
+                  {selectedSensor
+                    ? `Selected Sensor: ${selectedSensor.deviceId} — click a slot to assign`
+                    : "Select a tool or sensor, or right-click a cell to change it"}
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Right-click to clear cells</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Click + to add a sensorless slot. Right-click any cell to change it.</p>
               </div>
 
               <Grid
                 grid={grid}
-                selectedTool={selectedTool}
-                updateCell={(row, col) => handleGridCellClick(row, col)}
-                clearCell={clearCell}
+                onCellClick={handleGridCellClick}
+                onCellAction={(row, col, action) => void handleGridCellAction(row, col, action)}
+                onSpotDetailsChange={(row, col, details) =>
+                  void handleSpotDetailsChange(row, col, details)
+                }
                 sensorMap={sensorMap}
               />
 
@@ -392,8 +519,9 @@ export default function EditLayoutPage() {
                       type="number"
                       min="1"
                       max="50"
-                      value={rows}
-                      onChange={(event) => handleRowsChange(Number(event.target.value))}
+                      value={rowsInput}
+                      onChange={(event) => setRowsInput(event.target.value)}
+                      onBlur={handleRowsChange}
                       className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                   </div>
@@ -405,38 +533,25 @@ export default function EditLayoutPage() {
                       type="number"
                       min="1"
                       max="50"
-                      value={cols}
-                      onChange={(event) => handleColsChange(Number(event.target.value))}
+                      value={colsInput}
+                      onChange={(event) => setColsInput(event.target.value)}
+                      onBlur={handleColsChange}
                       className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* AVAILABLE SPOTS */}
+              {/* AVAILABLE SENSORS */}
               <div className="border rounded-lg p-4 bg-gray-50 dark:bg-slate-900 dark:border-slate-700 flex-1 overflow-hidden flex flex-col">
-                <AvailableSpots
+                <AvailableSensors
                   key={spotsRefreshKey}
-                  placedSpotIds={placedSpots}
-                  onSelectSpot={handleSelectSpot}
-                  currentLayoutId={layoutId}
+                  selectedSensorId={selectedSensor?.sensorId}
+                  assignedSensorIds={pendingSensorIds}
+                  onSelectSensor={handleSelectSensor}
                 />
-                {selectedSpot && (
-                  <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded">
-                    <p className="text-sm font-medium text-blue-900 dark:text-blue-100">Current Selection</p>
-                    <p className="text-sm text-blue-800 dark:text-blue-200">{selectedSpot.slotName}</p>
-                    <small className="text-blue-600 dark:text-blue-300">Click on a grid cell to place it</small>
-                  </div>
-                )}
               </div>
 
-              {/* TESTING CODE (DEVELOPMENT PURPOSE) */}
-              <div className="border rounded-lg p-4 bg-gray-50 dark:bg-slate-900 dark:border-slate-700 flex-1 overflow-hidden flex flex-col">
-                <h2 className="font-semibold mb-4 dark:text-slate-100">Toggle Buttons to Simulate Sensors (Development Purpose)</h2>
-                <SensorSimulate />
-
-              
-              </div>
 
 
 

@@ -63,7 +63,7 @@ export async function createSpot(data) {
     columnNo: data.columnNo || '',
     floor: data.floor || '',
     vehicleType: VALID_VEHICLE_TYPES.includes(data.vehicleType) ? data.vehicleType : 'any',
-    status: 'available',
+    status: VALID_STATUSES.includes(data.status) ? data.status : 'available',
     ownerId: data.ownerId,
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -73,10 +73,13 @@ export async function createSpot(data) {
 }
 
 export async function updateSpot(slotId, updates) {
-  const allowed = ['slotName', 'rowNo', 'columnNo', 'vehicleType', 'status', 'floor', 'layoutId', 'lotId'];
+  const allowed = ['slotName', 'rowNo', 'columnNo', 'vehicleType', 'status', 'floor', 'layoutId', 'lotId', 'forcedOccupied'];
   const sanitized = {};
   for (const key of allowed) {
     if (updates[key] !== undefined) sanitized[key] = updates[key];
+  }
+  if (sanitized.forcedOccupied !== undefined && typeof sanitized.forcedOccupied !== 'boolean') {
+    throw new Error('forcedOccupied must be a boolean');
   }
   if (sanitized.status && !VALID_STATUSES.includes(sanitized.status)) {
     throw new Error(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`);
@@ -98,6 +101,11 @@ export async function deleteSpot(slotId) {
 export async function updateSpotStatus(slotId, status) {
   if (!VALID_STATUSES.includes(status)) {
     throw new Error(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`);
+  }
+  const snapshot = await db.ref(`spots/${slotId}`).once('value');
+  const spot = snapshot.val();
+  if (spot?.forcedOccupied && status !== 'occupied') {
+    return { slotId, status: 'occupied', forcedOccupied: true };
   }
   const updatedAt = Date.now();
   await db.ref(`spots/${slotId}`).update({ status, updatedAt });

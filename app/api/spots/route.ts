@@ -54,9 +54,12 @@ export const GET = withAuth(async (req: NextRequest) => {
       })
     );
     return NextResponse.json({ success: true, data: spotsWithSensor });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("GET /api/spots error:", err);
-    return NextResponse.json({ message: err.message }, { status: 500 });
+    return NextResponse.json(
+      { message: err instanceof Error ? err.message : "Failed to fetch spots" },
+      { status: 500 }
+    );
   }
 });
 
@@ -65,7 +68,7 @@ export const POST = withAuth(async (req: NextRequest) => {
     const body = await req.json();
     if (!body) throw new Error("Missing request body");
 
-    const { slotName, vehicleType, rowNo, columnNo, layoutId, lotId, floor } = body;
+    const { slotName, vehicleType, rowNo, columnNo, layoutId, lotId, floor, status } = body;
 
     if (!slotName || !vehicleType) {
       return NextResponse.json(
@@ -74,7 +77,7 @@ export const POST = withAuth(async (req: NextRequest) => {
       );
     }
 
-    const userId = (req as any).user.uid;
+    const userId = (req as NextRequest & { user: { uid: string } }).user.uid;
 
     // Create spot in Firebase; layout values can be assigned later
     const spot = await createSpot({
@@ -85,15 +88,18 @@ export const POST = withAuth(async (req: NextRequest) => {
       layoutId: layoutId ?? '',
       lotId: lotId ?? '',
       floor: floor ?? '',
-      status: "available",
+      status: status ?? "available",
       ownerId: userId,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
 
     return NextResponse.json({ message: "Spot created", data: spot }, { status: 201 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("POST /api/spots error:", err);
-    return NextResponse.json({ message: err.message }, { status: 500 });
+    return NextResponse.json(
+      { message: err instanceof Error ? err.message : "Failed to create spot" },
+      { status: 500 }
+    );
   }
 });

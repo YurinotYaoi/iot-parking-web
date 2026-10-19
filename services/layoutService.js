@@ -69,8 +69,8 @@ export async function createLayout(lotId, data) {
       }),
     });
 
-    if (!res.ok) throw new Error('Failed to create layout');
     const response = await res.json();
+    if (!res.ok) throw new Error(response.error || response.message || 'Failed to create layout');
     return response.data;
   } catch (error) {
     console.error('Error creating layout:', error);
@@ -96,8 +96,8 @@ export async function updateLayout(layoutId, updates) {
       }),
     });
 
-    if (!res.ok) throw new Error('Failed to update layout');
     const response = await res.json();
+    if (!res.ok) throw new Error(response.error || response.message || 'Failed to update layout');
     return response.data;
   } catch (error) {
     console.error('Error updating layout:', error);
